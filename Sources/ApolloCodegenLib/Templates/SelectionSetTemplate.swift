@@ -10,7 +10,7 @@ struct SelectionSetTemplate {
   private let nameCache: SelectionSetNameCache
 
   init(
-    mutable: Bool = false,
+    mutable: Bool = true,
     generateInitializers: Bool,
     config: ApolloCodegen.ConfigurationContext
   ) {
