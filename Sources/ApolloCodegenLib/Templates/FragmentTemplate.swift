@@ -31,6 +31,6 @@ struct FragmentTemplate: TemplateRenderer {
   }
 
   private var isMutable: Bool {
-    fragment.definition.isLocalCacheMutation
+    config.options.mutableFragments
   }
 }
