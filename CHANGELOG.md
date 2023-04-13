@@ -1,5 +1,21 @@
 # Change Log
 
+## v1.1.2
+
+### Fixed
+- **Crash after calling `cancel()` on `Cancellable` ([#2932](https://github.com/apollographql/apollo-ios/issues/2932)):** Calling `cancel()` on a non-subscription `Cancellable` will now correctly handle the lifetime of the internally `Unmanaged` object. [#2943](https://github.com/apollographql/apollo-ios/pull/2943) - _Thank you to [@yonaskolb](https://github.com/yonaskolb) for raising the issue._
+- **Deprecation messages are not escaped ([#2879](https://github.com/apollographql/apollo-ios/issues/2879)):** If escaped characters are used in GraphQL deprecation messages they are now properly escaped in the rendered Swift warning or attribution message. [#2951](https://github.com/apollographql/apollo-ios/pull/2951) _Thank you to [@djavan-bertrand](https://github.com/djavan-bertrand) for raising the issue._
+
+### Added
+- **Add injecting additionalErrorHandler for upload operations to RequestChainNetworkTransport ([#2948](https://github.com/apollographql/apollo-ios/pull/2948)):** `Upload` operations can now have custom error interceptors like other operations. [#2948](https://github.com/apollographql/apollo-ios/pull/2948) _Thank you to [@RobertDresler](https://github.com/RobertDresler) for the contribution._
+
+## v1.1.1
+
+### Fixed
+- **Version 1.1.0 does not compile when installed via CocoaPods ([#2936](https://github.com/apollographql/apollo-ios/issues/2936)):** Module names not present in CocoaPods builds have been removed from type declarations. [#2937](https://github.com/apollographql/apollo-ios/pull/2937) - _Thank you to [@simonliotier](https://github.com/simonliotier) for raising the issue._
+- **Crash when using mocks for Double Nested Arrays ([#2809](https://github.com/apollographql/apollo-ios/issues/2809)):** Test mock data is now correctly applied to the selection set. [#2939](https://github.com/apollographql/apollo-ios/pull/2939) - _Thank you to [@scottasoutherland](https://github.com/scottasoutherland) for raising the issue._
+- **In 1.1.0, passing custom scalars or GraphQLEnum to mocks fails ([#2928](https://github.com/apollographql/apollo-ios/issues/2928)):** Test mock data is now correctly applied to the selection set. [#2939](https://github.com/apollographql/apollo-ios/pull/2939) - _Thank you to [@scottasoutherland](https://github.com/scottasoutherland) for raising the issue._
+
 ## v1.1.0
 
 Apollo iOS v1.1 primarily focuses on adding generated initializers to the generated operation models.
