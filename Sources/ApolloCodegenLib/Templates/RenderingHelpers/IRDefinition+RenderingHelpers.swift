@@ -7,6 +7,7 @@ extension IR.Definition {
   var isMutable: Bool {
     switch self {
     case  let .operation(operation):
+      return true // make operation Data mutatable for now as we need it
       return operation.definition.isLocalCacheMutation
     case let .namedFragment(fragment):
       return fragment.definition.isLocalCacheMutation
