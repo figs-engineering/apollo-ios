@@ -17,6 +17,44 @@ class IR {
       referencedTypes: .init(compilationResult.referencedTypes),
       documentation: compilationResult.schemaDocumentation
     )
+    self.processRootTypes()
+  }
+  
+  private func processRootTypes() {
+    let rootTypes = compilationResult.rootTypes
+    let typeList = [rootTypes.queryType.name, rootTypes.mutationType?.name, rootTypes.subscriptionType?.name].compactMap { $0 }
+    
+    compilationResult.operations.forEach { op in
+      op.rootType.isRootFieldType = typeList.contains(op.rootType.name)
+    }
+    
+    compilationResult.fragments.forEach { fragment in
+      fragment.type.isRootFieldType = typeList.contains(fragment.type.name)
+    }
+  }
+
+  /// A top level GraphQL definition, which can be an operation or a named fragment.
+  enum Definition {
+    case operation(IR.Operation)
+    case namedFragment(IR.NamedFragment)
+
+    var name: String {
+      switch self {
+      case  let .operation(operation):
+        return operation.definition.name
+      case let .namedFragment(fragment):
+        return fragment.definition.name
+      }
+    }
+
+    var rootField: IR.EntityField {
+      switch self {
+      case  let .operation(operation):
+        return operation.rootField
+      case let .namedFragment(fragment):
+        return fragment.rootField
+      }
+    }
   }
 
   /// Represents a concrete entity in an operation or fragment that fields are selected upon.
