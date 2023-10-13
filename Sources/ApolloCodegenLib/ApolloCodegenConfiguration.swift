@@ -1371,6 +1371,7 @@ extension ApolloCodegenConfiguration.OutputOptions {
     warningsOnDeprecatedUsage: ApolloCodegenConfiguration.Composition = Default.warningsOnDeprecatedUsage,
     conversionStrategies: ApolloCodegenConfiguration.ConversionStrategies = Default.conversionStrategies,
     pruneGeneratedFiles: Bool = Default.pruneGeneratedFiles,
+    mutableFragments: Bool = Default.mutableFragments,
     markOperationDefinitionsAsFinal: Bool = Default.markOperationDefinitionsAsFinal
   ) {
     self.additionalInflectionRules = additionalInflectionRules
@@ -1382,6 +1383,7 @@ extension ApolloCodegenConfiguration.OutputOptions {
     self.warningsOnDeprecatedUsage = warningsOnDeprecatedUsage
     self.conversionStrategies = conversionStrategies
     self.pruneGeneratedFiles = pruneGeneratedFiles
+    self.mutableFragments = mutableFragments
     self.markOperationDefinitionsAsFinal = markOperationDefinitionsAsFinal
   }
   
@@ -1420,6 +1422,7 @@ extension ApolloCodegenConfiguration.OutputOptions {
     warningsOnDeprecatedUsage: ApolloCodegenConfiguration.Composition = Default.warningsOnDeprecatedUsage,
     conversionStrategies: ApolloCodegenConfiguration.ConversionStrategies = Default.conversionStrategies,
     pruneGeneratedFiles: Bool = Default.pruneGeneratedFiles,
+    mutableFragments: Bool = Default.mutableFragments,
     markOperationDefinitionsAsFinal: Bool = Default.markOperationDefinitionsAsFinal
   ) {
     self.additionalInflectionRules = additionalInflectionRules
@@ -1431,6 +1434,7 @@ extension ApolloCodegenConfiguration.OutputOptions {
     self.warningsOnDeprecatedUsage = warningsOnDeprecatedUsage
     self.conversionStrategies = conversionStrategies
     self.pruneGeneratedFiles = pruneGeneratedFiles
+    self.mutableFragments = mutableFragments
     self.markOperationDefinitionsAsFinal = markOperationDefinitionsAsFinal
   }
 
