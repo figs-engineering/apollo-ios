@@ -5,16 +5,9 @@
 
 public class ClassroomPetsCCNQuery: GraphQLQuery {
   public static let operationName: String = "ClassroomPetsCCN"
-  public static let document: ApolloAPI.DocumentType = .notPersisted(
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
     definition: .init(
-      #"""
-      query ClassroomPetsCCN {
-        classroomPets[!]? {
-          __typename
-          ...ClassroomPetDetailsCCN
-        }
-      }
-      """#,
+      #"query ClassroomPetsCCN { classroomPets[!]? { __typename ...ClassroomPetDetailsCCN } }"#,
       fragments: [ClassroomPetDetailsCCN.self]
     ))
 
@@ -34,13 +27,15 @@ public class ClassroomPetsCCNQuery: GraphQLQuery {
     public init(
       classroomPets: [ClassroomPet]? = nil
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": AnimalKingdomAPI.Objects.Query.typename,
-        "classroomPets": classroomPets._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": AnimalKingdomAPI.Objects.Query.typename,
+          "classroomPets": classroomPets._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(ClassroomPetsCCNQuery.Data.self)
+        ]
+      ))
     }
 
     /// ClassroomPet
@@ -68,13 +63,14 @@ public class ClassroomPetsCCNQuery: GraphQLQuery {
       public init(
         __typename: String
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": __typename,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self),
-            ObjectIdentifier(ClassroomPetDetailsCCN.self)
-          ])
-        ]))
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": __typename,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(ClassroomPetsCCNQuery.Data.ClassroomPet.self)
+          ]
+        ))
       }
 
       /// ClassroomPet.AsAnimal
@@ -104,15 +100,18 @@ public class ClassroomPetsCCNQuery: GraphQLQuery {
           __typename: String,
           height: ClassroomPetDetailsCCN.AsAnimal.Height
         ) {
-          self.init(_dataDict: DataDict(data: [
-            "__typename": __typename,
-            "height": height._fieldData,
-            "__fulfilled": Set([
-              ObjectIdentifier(Self.self),
-              ObjectIdentifier(ClassroomPet.self),
-              ObjectIdentifier(ClassroomPetDetailsCCN.self)
-            ])
-          ]))
+          self.init(_dataDict: DataDict(
+            data: [
+              "__typename": __typename,
+              "height": height._fieldData,
+            ],
+            fulfilledFragments: [
+              ObjectIdentifier(ClassroomPetsCCNQuery.Data.ClassroomPet.self),
+              ObjectIdentifier(ClassroomPetsCCNQuery.Data.ClassroomPet.AsAnimal.self),
+              ObjectIdentifier(ClassroomPetDetailsCCN.self),
+              ObjectIdentifier(ClassroomPetDetailsCCN.AsAnimal.self)
+            ]
+          ))
         }
       }
     }

@@ -5,17 +5,10 @@
 
 public class HeroDetailsFragmentConditionalInclusionQuery: GraphQLQuery {
   public static let operationName: String = "HeroDetailsFragmentConditionalInclusion"
-  public static let document: ApolloAPI.DocumentType = .automaticallyPersisted(
-    operationIdentifier: "b0fa7927ff93b4a579c3460fb04d093072d34c8018e41197c7e080aeeec5e19b",
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
+    operationIdentifier: "17dfb13c5d9e6c67703fc037b9114ea53ccc8f9274dfecb4abfc2d5a168cf612",
     definition: .init(
-      #"""
-      query HeroDetailsFragmentConditionalInclusion($includeDetails: Boolean!) {
-        hero {
-          __typename
-          ...HeroDetails @include(if: $includeDetails)
-        }
-      }
-      """#,
+      #"query HeroDetailsFragmentConditionalInclusion($includeDetails: Boolean!) { hero { __typename ...HeroDetails @include(if: $includeDetails) } }"#,
       fragments: [HeroDetails.self]
     ))
 
@@ -41,13 +34,15 @@ public class HeroDetailsFragmentConditionalInclusionQuery: GraphQLQuery {
     public init(
       hero: Hero? = nil
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": StarWarsAPI.Objects.Query.typename,
-        "hero": hero._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": StarWarsAPI.Objects.Query.typename,
+          "hero": hero._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(HeroDetailsFragmentConditionalInclusionQuery.Data.self)
+        ]
+      ))
     }
 
     /// Hero
@@ -75,12 +70,14 @@ public class HeroDetailsFragmentConditionalInclusionQuery: GraphQLQuery {
       public init(
         __typename: String
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": __typename,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self)
-          ])
-        ]))
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": __typename,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(HeroDetailsFragmentConditionalInclusionQuery.Data.Hero.self)
+          ]
+        ))
       }
 
       /// Hero.IfIncludeDetails
@@ -110,15 +107,17 @@ public class HeroDetailsFragmentConditionalInclusionQuery: GraphQLQuery {
           __typename: String,
           name: String
         ) {
-          self.init(_dataDict: DataDict(data: [
-            "__typename": __typename,
-            "name": name,
-            "__fulfilled": Set([
-              ObjectIdentifier(Self.self),
-              ObjectIdentifier(Hero.self),
+          self.init(_dataDict: DataDict(
+            data: [
+              "__typename": __typename,
+              "name": name,
+            ],
+            fulfilledFragments: [
+              ObjectIdentifier(HeroDetailsFragmentConditionalInclusionQuery.Data.Hero.self),
+              ObjectIdentifier(HeroDetailsFragmentConditionalInclusionQuery.Data.Hero.IfIncludeDetails.self),
               ObjectIdentifier(HeroDetails.self)
-            ])
-          ]))
+            ]
+          ))
         }
       }
     }

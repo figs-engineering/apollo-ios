@@ -5,39 +5,9 @@
 
 public class IssuesAndCommentsForRepositoryQuery: GraphQLQuery {
   public static let operationName: String = "IssuesAndCommentsForRepository"
-  public static let document: ApolloAPI.DocumentType = .notPersisted(
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
     definition: .init(
-      #"""
-      query IssuesAndCommentsForRepository {
-        repository(name: "apollo-ios", owner: "apollographql") {
-          __typename
-          name
-          issues(last: 100) {
-            __typename
-            nodes {
-              __typename
-              title
-              author {
-                __typename
-                ...AuthorDetails
-              }
-              body
-              comments(last: 100) {
-                __typename
-                nodes {
-                  __typename
-                  body
-                  author {
-                    __typename
-                    ...AuthorDetails
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      """#,
+      #"query IssuesAndCommentsForRepository { repository(name: "apollo-ios", owner: "apollographql") { __typename name issues(last: 100) { __typename nodes { __typename title author { __typename ...AuthorDetails } body comments(last: 100) { __typename nodes { __typename body author { __typename ...AuthorDetails } } } } } } }"#,
       fragments: [AuthorDetails.self]
     ))
 

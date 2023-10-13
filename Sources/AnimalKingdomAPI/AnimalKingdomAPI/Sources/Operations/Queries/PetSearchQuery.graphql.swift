@@ -5,17 +5,9 @@
 
 public class PetSearchQuery: GraphQLQuery {
   public static let operationName: String = "PetSearch"
-  public static let document: ApolloAPI.DocumentType = .notPersisted(
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
     definition: .init(
-      #"""
-      query PetSearch($filters: PetSearchFilters = {species: ["Dog", "Cat"], size: SMALL, measurements: {height: 10.5, weight: 5.0}}) {
-        pets(filters: $filters) {
-          __typename
-          id
-          humanName
-        }
-      }
-      """#
+      #"query PetSearch($filters: PetSearchFilters = {species: ["Dog", "Cat"], size: SMALL, measurements: {height: 10.5, weight: 5.0}}) { pets(filters: $filters) { __typename id humanName } }"#
     ))
 
   public var filters: GraphQLNullable<PetSearchFilters>
@@ -51,13 +43,15 @@ public class PetSearchQuery: GraphQLQuery {
     public init(
       pets: [Pet]
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": AnimalKingdomAPI.Objects.Query.typename,
-        "pets": pets._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": AnimalKingdomAPI.Objects.Query.typename,
+          "pets": pets._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(PetSearchQuery.Data.self)
+        ]
+      ))
     }
 
     /// Pet
@@ -82,14 +76,16 @@ public class PetSearchQuery: GraphQLQuery {
         id: AnimalKingdomAPI.ID,
         humanName: String? = nil
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": __typename,
-          "id": id,
-          "humanName": humanName,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self)
-          ])
-        ]))
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": __typename,
+            "id": id,
+            "humanName": humanName,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(PetSearchQuery.Data.Pet.self)
+          ]
+        ))
       }
     }
   }

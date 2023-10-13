@@ -5,18 +5,10 @@
 
 public class HeroNameAndAppearsInQuery: GraphQLQuery {
   public static let operationName: String = "HeroNameAndAppearsIn"
-  public static let document: ApolloAPI.DocumentType = .automaticallyPersisted(
-    operationIdentifier: "f714414a2002404f9943490c8cc9c1a7b8ecac3ca229fa5a326186b43c1385ce",
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
+    operationIdentifier: "ecdf5248575524004a9d43832abc54e8c0e1d2b3c0afb8bb0c1c1c514b4f9baf",
     definition: .init(
-      #"""
-      query HeroNameAndAppearsIn($episode: Episode) {
-        hero(episode: $episode) {
-          __typename
-          name
-          appearsIn
-        }
-      }
-      """#
+      #"query HeroNameAndAppearsIn($episode: Episode) { hero(episode: $episode) { __typename name appearsIn } }"#
     ))
 
   public var episode: GraphQLNullable<GraphQLEnum<Episode>>
@@ -41,13 +33,15 @@ public class HeroNameAndAppearsInQuery: GraphQLQuery {
     public init(
       hero: Hero? = nil
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": StarWarsAPI.Objects.Query.typename,
-        "hero": hero._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": StarWarsAPI.Objects.Query.typename,
+          "hero": hero._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(HeroNameAndAppearsInQuery.Data.self)
+        ]
+      ))
     }
 
     /// Hero
@@ -74,14 +68,16 @@ public class HeroNameAndAppearsInQuery: GraphQLQuery {
         name: String,
         appearsIn: [GraphQLEnum<StarWarsAPI.Episode>?]
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": __typename,
-          "name": name,
-          "appearsIn": appearsIn,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self)
-          ])
-        ]))
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": __typename,
+            "name": name,
+            "appearsIn": appearsIn,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(HeroNameAndAppearsInQuery.Data.Hero.self)
+          ]
+        ))
       }
     }
   }

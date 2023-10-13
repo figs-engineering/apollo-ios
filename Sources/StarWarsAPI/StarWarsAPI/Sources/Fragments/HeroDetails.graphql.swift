@@ -4,20 +4,9 @@
 @_exported import ApolloAPI
 
 public struct HeroDetails: StarWarsAPI.SelectionSet, Fragment {
-  public static var fragmentDefinition: StaticString { """
-    fragment HeroDetails on Character {
-      __typename
-      name
-      ... on Human {
-        __typename
-        height
-      }
-      ... on Droid {
-        __typename
-        primaryFunction
-      }
-    }
-    """ }
+  public static var fragmentDefinition: StaticString {
+    #"fragment HeroDetails on Character { __typename name ... on Human { __typename height } ... on Droid { __typename primaryFunction } }"#
+  }
 
   public let __data: DataDict
   public init(_dataDict: DataDict) { __data = _dataDict }
@@ -40,13 +29,15 @@ public struct HeroDetails: StarWarsAPI.SelectionSet, Fragment {
     __typename: String,
     name: String
   ) {
-    self.init(_dataDict: DataDict(data: [
-      "__typename": __typename,
-      "name": name,
-      "__fulfilled": Set([
-        ObjectIdentifier(Self.self)
-      ])
-    ]))
+    self.init(_dataDict: DataDict(
+      data: [
+        "__typename": __typename,
+        "name": name,
+      ],
+      fulfilledFragments: [
+        ObjectIdentifier(HeroDetails.self)
+      ]
+    ))
   }
 
   /// AsHuman
@@ -71,15 +62,17 @@ public struct HeroDetails: StarWarsAPI.SelectionSet, Fragment {
       height: Double? = nil,
       name: String
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": StarWarsAPI.Objects.Human.typename,
-        "height": height,
-        "name": name,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self),
-          ObjectIdentifier(HeroDetails.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": StarWarsAPI.Objects.Human.typename,
+          "height": height,
+          "name": name,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(HeroDetails.self),
+          ObjectIdentifier(HeroDetails.AsHuman.self)
+        ]
+      ))
     }
   }
 
@@ -105,15 +98,17 @@ public struct HeroDetails: StarWarsAPI.SelectionSet, Fragment {
       primaryFunction: String? = nil,
       name: String
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": StarWarsAPI.Objects.Droid.typename,
-        "primaryFunction": primaryFunction,
-        "name": name,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self),
-          ObjectIdentifier(HeroDetails.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": StarWarsAPI.Objects.Droid.typename,
+          "primaryFunction": primaryFunction,
+          "name": name,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(HeroDetails.self),
+          ObjectIdentifier(HeroDetails.AsDroid.self)
+        ]
+      ))
     }
   }
 }

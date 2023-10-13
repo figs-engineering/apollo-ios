@@ -5,17 +5,10 @@
 
 public class HeroNameWithFragmentQuery: GraphQLQuery {
   public static let operationName: String = "HeroNameWithFragment"
-  public static let document: ApolloAPI.DocumentType = .automaticallyPersisted(
-    operationIdentifier: "b952f0054915a32ec524ac0dde0244bcda246649debe149f9e32e303e21c8266",
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
+    operationIdentifier: "68baad3c27796cb1bf980681324e43b948aa1109698ba57404c1afa46e914ab1",
     definition: .init(
-      #"""
-      query HeroNameWithFragment($episode: Episode) {
-        hero(episode: $episode) {
-          __typename
-          ...CharacterName
-        }
-      }
-      """#,
+      #"query HeroNameWithFragment($episode: Episode) { hero(episode: $episode) { __typename ...CharacterName } }"#,
       fragments: [CharacterName.self]
     ))
 
@@ -41,13 +34,15 @@ public class HeroNameWithFragmentQuery: GraphQLQuery {
     public init(
       hero: Hero? = nil
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": StarWarsAPI.Objects.Query.typename,
-        "hero": hero._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": StarWarsAPI.Objects.Query.typename,
+          "hero": hero._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(HeroNameWithFragmentQuery.Data.self)
+        ]
+      ))
     }
 
     /// Hero
@@ -77,14 +72,16 @@ public class HeroNameWithFragmentQuery: GraphQLQuery {
         __typename: String,
         name: String
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": __typename,
-          "name": name,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self),
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": __typename,
+            "name": name,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(HeroNameWithFragmentQuery.Data.Hero.self),
             ObjectIdentifier(CharacterName.self)
-          ])
-        ]))
+          ]
+        ))
       }
     }
   }

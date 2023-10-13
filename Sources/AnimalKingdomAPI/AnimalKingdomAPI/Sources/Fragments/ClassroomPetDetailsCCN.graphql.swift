@@ -4,17 +4,9 @@
 @_exported import ApolloAPI
 
 public struct ClassroomPetDetailsCCN: AnimalKingdomAPI.SelectionSet, Fragment {
-  public static var fragmentDefinition: StaticString { """
-    fragment ClassroomPetDetailsCCN on ClassroomPet {
-      __typename
-      ... on Animal {
-        height {
-          __typename
-          inches!
-        }
-      }
-    }
-    """ }
+  public static var fragmentDefinition: StaticString {
+    #"fragment ClassroomPetDetailsCCN on ClassroomPet { __typename ... on Animal { height { __typename inches! } } }"#
+  }
 
   public let __data: DataDict
   public init(_dataDict: DataDict) { __data = _dataDict }
@@ -30,12 +22,14 @@ public struct ClassroomPetDetailsCCN: AnimalKingdomAPI.SelectionSet, Fragment {
   public init(
     __typename: String
   ) {
-    self.init(_dataDict: DataDict(data: [
-      "__typename": __typename,
-      "__fulfilled": Set([
-        ObjectIdentifier(Self.self)
-      ])
-    ]))
+    self.init(_dataDict: DataDict(
+      data: [
+        "__typename": __typename,
+      ],
+      fulfilledFragments: [
+        ObjectIdentifier(ClassroomPetDetailsCCN.self)
+      ]
+    ))
   }
 
   /// AsAnimal
@@ -57,14 +51,16 @@ public struct ClassroomPetDetailsCCN: AnimalKingdomAPI.SelectionSet, Fragment {
       __typename: String,
       height: Height
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": __typename,
-        "height": height._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self),
-          ObjectIdentifier(ClassroomPetDetailsCCN.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": __typename,
+          "height": height._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(ClassroomPetDetailsCCN.self),
+          ObjectIdentifier(ClassroomPetDetailsCCN.AsAnimal.self)
+        ]
+      ))
     }
 
     /// AsAnimal.Height
@@ -85,13 +81,15 @@ public struct ClassroomPetDetailsCCN: AnimalKingdomAPI.SelectionSet, Fragment {
       public init(
         inches: Int
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": AnimalKingdomAPI.Objects.Height.typename,
-          "inches": inches,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self)
-          ])
-        ]))
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": AnimalKingdomAPI.Objects.Height.typename,
+            "inches": inches,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(ClassroomPetDetailsCCN.AsAnimal.Height.self)
+          ]
+        ))
       }
     }
   }

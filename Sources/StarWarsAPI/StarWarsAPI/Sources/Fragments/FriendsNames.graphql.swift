@@ -4,15 +4,9 @@
 @_exported import ApolloAPI
 
 public struct FriendsNames: StarWarsAPI.SelectionSet, Fragment {
-  public static var fragmentDefinition: StaticString { """
-    fragment FriendsNames on Character {
-      __typename
-      friends {
-        __typename
-        name
-      }
-    }
-    """ }
+  public static var fragmentDefinition: StaticString {
+    #"fragment FriendsNames on Character { __typename friends { __typename name } }"#
+  }
 
   public let __data: DataDict
   public init(_dataDict: DataDict) { __data = _dataDict }
@@ -30,13 +24,15 @@ public struct FriendsNames: StarWarsAPI.SelectionSet, Fragment {
     __typename: String,
     friends: [Friend?]? = nil
   ) {
-    self.init(_dataDict: DataDict(data: [
-      "__typename": __typename,
-      "friends": friends._fieldData,
-      "__fulfilled": Set([
-        ObjectIdentifier(Self.self)
-      ])
-    ]))
+    self.init(_dataDict: DataDict(
+      data: [
+        "__typename": __typename,
+        "friends": friends._fieldData,
+      ],
+      fulfilledFragments: [
+        ObjectIdentifier(FriendsNames.self)
+      ]
+    ))
   }
 
   /// Friend
@@ -59,13 +55,15 @@ public struct FriendsNames: StarWarsAPI.SelectionSet, Fragment {
       __typename: String,
       name: String
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": __typename,
-        "name": name,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": __typename,
+          "name": name,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(FriendsNames.Friend.self)
+        ]
+      ))
     }
   }
 }

@@ -4,15 +4,9 @@
 @_exported import ApolloAPI
 
 public struct HeightInMeters: AnimalKingdomAPI.SelectionSet, Fragment {
-  public static var fragmentDefinition: StaticString { """
-    fragment HeightInMeters on Animal {
-      __typename
-      height {
-        __typename
-        meters
-      }
-    }
-    """ }
+  public static var fragmentDefinition: StaticString {
+    #"fragment HeightInMeters on Animal { __typename height { __typename meters } }"#
+  }
 
   public let __data: DataDict
   public init(_dataDict: DataDict) { __data = _dataDict }
@@ -29,13 +23,15 @@ public struct HeightInMeters: AnimalKingdomAPI.SelectionSet, Fragment {
     __typename: String,
     height: Height
   ) {
-    self.init(_dataDict: DataDict(data: [
-      "__typename": __typename,
-      "height": height._fieldData,
-      "__fulfilled": Set([
-        ObjectIdentifier(Self.self)
-      ])
-    ]))
+    self.init(_dataDict: DataDict(
+      data: [
+        "__typename": __typename,
+        "height": height._fieldData,
+      ],
+      fulfilledFragments: [
+        ObjectIdentifier(HeightInMeters.self)
+      ]
+    ))
   }
 
   /// Height
@@ -56,13 +52,15 @@ public struct HeightInMeters: AnimalKingdomAPI.SelectionSet, Fragment {
     public init(
       meters: Int
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": AnimalKingdomAPI.Objects.Height.typename,
-        "meters": meters,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": AnimalKingdomAPI.Objects.Height.typename,
+          "meters": meters,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(HeightInMeters.Height.self)
+        ]
+      ))
     }
   }
 }

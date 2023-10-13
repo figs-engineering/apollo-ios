@@ -15,17 +15,19 @@ struct FragmentTemplate: TemplateRenderer {
 
     return TemplateString(
     """
-    \(embeddedAccessControlModifier)\
-    struct \(fragment.generatedDefinitionName): \
+    \(accessControlModifier(for: .parent))\
+    struct \(fragment.generatedDefinitionName.asFragmentName): \
     \(definition.renderedSelectionSetType(config)), Fragment {
-      public static var fragmentDefinition: StaticString { ""\"
-        \(fragment.definition.source)
-        ""\" }
+      \(accessControlModifier(for: .member))\
+    static var fragmentDefinition: StaticString {
+        #"\(fragment.definition.source.convertedToSingleLine())"#
+      }
 
       \(SelectionSetTemplate(
         definition: definition,
         generateInitializers: config.options.shouldGenerateSelectionSetInitializers(for: fragment),
-        config: config
+        config: config,
+        renderAccessControl: { accessControlModifier(for: .member) }()
       ).renderBody())
     }
 

@@ -5,19 +5,10 @@
 
 public class StarshipCoordinatesQuery: GraphQLQuery {
   public static let operationName: String = "StarshipCoordinates"
-  public static let document: ApolloAPI.DocumentType = .automaticallyPersisted(
-    operationIdentifier: "8dd77d4bc7494c184606da092a665a7c2ca3c2a3f14d3b23fa5e469e207b3406",
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
+    operationIdentifier: "c10b54b8dd9361556f3b12d71f28c859ace043525d8d19541b39eadc47d14b15",
     definition: .init(
-      #"""
-      query StarshipCoordinates($coordinates: [[Float!]!]) {
-        starshipCoordinates(coordinates: $coordinates) {
-          __typename
-          name
-          coordinates
-          length
-        }
-      }
-      """#
+      #"query StarshipCoordinates($coordinates: [[Float!]!]) { starshipCoordinates(coordinates: $coordinates) { __typename name coordinates length } }"#
     ))
 
   public var coordinates: GraphQLNullable<[[Double]]>
@@ -42,13 +33,15 @@ public class StarshipCoordinatesQuery: GraphQLQuery {
     public init(
       starshipCoordinates: StarshipCoordinates? = nil
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": StarWarsAPI.Objects.Query.typename,
-        "starshipCoordinates": starshipCoordinates._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": StarWarsAPI.Objects.Query.typename,
+          "starshipCoordinates": starshipCoordinates._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(StarshipCoordinatesQuery.Data.self)
+        ]
+      ))
     }
 
     /// StarshipCoordinates
@@ -77,15 +70,17 @@ public class StarshipCoordinatesQuery: GraphQLQuery {
         coordinates: [[Double]]? = nil,
         length: Double? = nil
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": StarWarsAPI.Objects.Starship.typename,
-          "name": name,
-          "coordinates": coordinates,
-          "length": length,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self)
-          ])
-        ]))
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": StarWarsAPI.Objects.Starship.typename,
+            "name": name,
+            "coordinates": coordinates,
+            "length": length,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(StarshipCoordinatesQuery.Data.StarshipCoordinates.self)
+          ]
+        ))
       }
     }
   }

@@ -4,17 +4,9 @@
 @_exported import ApolloAPI
 
 public struct PetDetails: AnimalKingdomAPI.SelectionSet, Fragment {
-  public static var fragmentDefinition: StaticString { """
-    fragment PetDetails on Pet {
-      __typename
-      humanName
-      favoriteToy
-      owner {
-        __typename
-        firstName
-      }
-    }
-    """ }
+  public static var fragmentDefinition: StaticString {
+    #"fragment PetDetails on Pet { __typename humanName favoriteToy owner { __typename firstName } }"#
+  }
 
   public let __data: DataDict
   public init(_dataDict: DataDict) { __data = _dataDict }
@@ -37,15 +29,17 @@ public struct PetDetails: AnimalKingdomAPI.SelectionSet, Fragment {
     favoriteToy: String,
     owner: Owner? = nil
   ) {
-    self.init(_dataDict: DataDict(data: [
-      "__typename": __typename,
-      "humanName": humanName,
-      "favoriteToy": favoriteToy,
-      "owner": owner._fieldData,
-      "__fulfilled": Set([
-        ObjectIdentifier(Self.self)
-      ])
-    ]))
+    self.init(_dataDict: DataDict(
+      data: [
+        "__typename": __typename,
+        "humanName": humanName,
+        "favoriteToy": favoriteToy,
+        "owner": owner._fieldData,
+      ],
+      fulfilledFragments: [
+        ObjectIdentifier(PetDetails.self)
+      ]
+    ))
   }
 
   /// Owner
@@ -66,13 +60,15 @@ public struct PetDetails: AnimalKingdomAPI.SelectionSet, Fragment {
     public init(
       firstName: String
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": AnimalKingdomAPI.Objects.Human.typename,
-        "firstName": firstName,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": AnimalKingdomAPI.Objects.Human.typename,
+          "firstName": firstName,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(PetDetails.Owner.self)
+        ]
+      ))
     }
   }
 }

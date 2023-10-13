@@ -5,19 +5,9 @@
 
 public class UploadMultipleFilesToTheSameParameterMutation: GraphQLMutation {
   public static let operationName: String = "UploadMultipleFilesToTheSameParameter"
-  public static let document: ApolloAPI.DocumentType = .notPersisted(
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
     definition: .init(
-      #"""
-      mutation UploadMultipleFilesToTheSameParameter($files: [Upload!]!) {
-        multipleUpload(files: $files) {
-          __typename
-          id
-          path
-          filename
-          mimetype
-        }
-      }
-      """#
+      #"mutation UploadMultipleFilesToTheSameParameter($files: [Upload!]!) { multipleUpload(files: $files) { __typename id path filename mimetype } }"#
     ))
 
   public var files: [Upload]

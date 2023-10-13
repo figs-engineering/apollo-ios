@@ -4,23 +4,9 @@
 @_exported import ApolloAPI
 
 public struct CharacterNameWithInlineFragment: StarWarsAPI.SelectionSet, Fragment {
-  public static var fragmentDefinition: StaticString { """
-    fragment CharacterNameWithInlineFragment on Character {
-      __typename
-      ... on Human {
-        __typename
-        friends {
-          __typename
-          appearsIn
-        }
-      }
-      ... on Droid {
-        __typename
-        ...CharacterName
-        ...FriendsNames
-      }
-    }
-    """ }
+  public static var fragmentDefinition: StaticString {
+    #"fragment CharacterNameWithInlineFragment on Character { __typename ... on Human { __typename friends { __typename appearsIn } } ... on Droid { __typename ...CharacterName ...FriendsNames } }"#
+  }
 
   public let __data: DataDict
   public init(_dataDict: DataDict) { __data = _dataDict }
@@ -38,12 +24,14 @@ public struct CharacterNameWithInlineFragment: StarWarsAPI.SelectionSet, Fragmen
   public init(
     __typename: String
   ) {
-    self.init(_dataDict: DataDict(data: [
-      "__typename": __typename,
-      "__fulfilled": Set([
-        ObjectIdentifier(Self.self)
-      ])
-    ]))
+    self.init(_dataDict: DataDict(
+      data: [
+        "__typename": __typename,
+      ],
+      fulfilledFragments: [
+        ObjectIdentifier(CharacterNameWithInlineFragment.self)
+      ]
+    ))
   }
 
   /// AsHuman
@@ -65,14 +53,16 @@ public struct CharacterNameWithInlineFragment: StarWarsAPI.SelectionSet, Fragmen
     public init(
       friends: [Friend?]? = nil
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": StarWarsAPI.Objects.Human.typename,
-        "friends": friends._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self),
-          ObjectIdentifier(CharacterNameWithInlineFragment.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": StarWarsAPI.Objects.Human.typename,
+          "friends": friends._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(CharacterNameWithInlineFragment.self),
+          ObjectIdentifier(CharacterNameWithInlineFragment.AsHuman.self)
+        ]
+      ))
     }
 
     /// AsHuman.Friend
@@ -95,13 +85,15 @@ public struct CharacterNameWithInlineFragment: StarWarsAPI.SelectionSet, Fragmen
         __typename: String,
         appearsIn: [GraphQLEnum<StarWarsAPI.Episode>?]
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": __typename,
-          "appearsIn": appearsIn,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self)
-          ])
-        ]))
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": __typename,
+            "appearsIn": appearsIn,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(CharacterNameWithInlineFragment.AsHuman.Friend.self)
+          ]
+        ))
       }
     }
   }
@@ -137,17 +129,19 @@ public struct CharacterNameWithInlineFragment: StarWarsAPI.SelectionSet, Fragmen
       name: String,
       friends: [FriendsNames.Friend?]? = nil
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": StarWarsAPI.Objects.Droid.typename,
-        "name": name,
-        "friends": friends._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self),
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": StarWarsAPI.Objects.Droid.typename,
+          "name": name,
+          "friends": friends._fieldData,
+        ],
+        fulfilledFragments: [
           ObjectIdentifier(CharacterNameWithInlineFragment.self),
+          ObjectIdentifier(CharacterNameWithInlineFragment.AsDroid.self),
           ObjectIdentifier(CharacterName.self),
           ObjectIdentifier(FriendsNames.self)
-        ])
-      ]))
+        ]
+      ))
     }
   }
 }

@@ -2,25 +2,22 @@ import Foundation
 
 
 extension String {
-  /// Renders the string as the property name for a field accessor on a generated `SelectionSet`.
-  /// This escapes the names of properties that would conflict with Swift reserved keywords.
-  var asFieldAccessorPropertyName: String {
-    escapeIf(in: SwiftKeywords.FieldAccessorNamesToEscape)
-  }
 
   var asEnumCaseName: String {
     escapeIf(in: SwiftKeywords.FieldAccessorNamesToEscape)
   }
 
   var asSelectionSetName: String {
-    SwiftKeywords.SelectionSetTypeNamesToSuffix.contains(self) ?
+    SwiftKeywords.TypeNamesToSuffix.contains(self) ?
     "\(self)_SelectionSet" : self
   }
-
-  var asInputParameterName: String {
-    escapeIf(in: SwiftKeywords.InputParameterNamesToEscape).firstLowercased
+  
+  var asFragmentName: String {
+    let uppercasedName = self.firstUppercased
+    return SwiftKeywords.TypeNamesToSuffix.contains(uppercasedName) ?
+            "\(uppercasedName)_Fragment" : uppercasedName
   }
-
+  
   var asTestMockFieldPropertyName: String {
     escapeIf(in: SwiftKeywords.TestMockFieldNamesToEscape)
   }
@@ -36,6 +33,43 @@ extension String {
 
   private func escapeIf(in set: Set<String>) -> String {
     set.contains(self) ? "`\(self)`" : self
+  }
+  
+  /// Renders the string as the property name for a field accessor on a generated `SelectionSet`.
+  /// This escapes the names of properties that would conflict with Swift reserved keywords.
+  func renderAsFieldPropertyName(
+    config: ApolloCodegenConfiguration
+  ) -> String {
+    var propertyName = self
+    
+    switch config.options.conversionStrategies.fieldAccessors {
+    case .camelCase:
+      propertyName = propertyName.convertToCamelCase()
+    case .idiomatic:
+      break
+    }
+    
+    propertyName = propertyName.isAllUppercased ? propertyName.lowercased() : propertyName.firstLowercased
+    return propertyName.escapeIf(in: SwiftKeywords.FieldAccessorNamesToEscape)
+  }
+  
+  /// Convert to `camelCase` from a number of different `snake_case` variants.
+  ///
+  /// All inner `_` characters will be removed, each 'word' will be capitalized, returning a final
+  /// firstLowercased string while preserving original leading and trailing `_` characters.
+  func convertToCamelCase() -> String {
+    guard self.firstIndex(of: "_") != nil else {
+      if self.firstIndex(where: { $0.isLowercase }) != nil {
+        return self.firstLowercased
+      } else {
+        return self.lowercased()
+      }
+    }
+
+    return self.components(separatedBy: "_")
+      .map({ $0.isEmpty ? "_" : $0.capitalized })
+      .joined()
+      .firstLowercased
   }
 }
 
@@ -57,7 +91,7 @@ enum SwiftKeywords {
     "apollo", "apolloapi"
   ]
 
-  static let SelectionSetTypeNamesToSuffix: Set<String> = [
+  static let TypeNamesToSuffix: Set<String> = [
     "Any",
     "DataDict",
     "DocumentType",
@@ -75,6 +109,7 @@ enum SwiftKeywords {
     "Double",
     "ID",
     "Type",
+    "Error",
     "_",
   ]
 

@@ -5,18 +5,10 @@
 
 public class HeroNameConditionalBothSeparateQuery: GraphQLQuery {
   public static let operationName: String = "HeroNameConditionalBothSeparate"
-  public static let document: ApolloAPI.DocumentType = .automaticallyPersisted(
-    operationIdentifier: "d0f9e9205cdc09320035662f528a177654d3275b0bf94cf0e259a65fde33e7e5",
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
+    operationIdentifier: "60741c6fca15865a9af75a269ed05871e681f48ac48edfac2a77d953d217d03c",
     definition: .init(
-      #"""
-      query HeroNameConditionalBothSeparate($skipName: Boolean!, $includeName: Boolean!) {
-        hero {
-          __typename
-          name @skip(if: $skipName)
-          name @include(if: $includeName)
-        }
-      }
-      """#
+      #"query HeroNameConditionalBothSeparate($skipName: Boolean!, $includeName: Boolean!) { hero { __typename name @skip(if: $skipName) name @include(if: $includeName) } }"#
     ))
 
   public var skipName: Bool
@@ -49,13 +41,15 @@ public class HeroNameConditionalBothSeparateQuery: GraphQLQuery {
     public init(
       hero: Hero? = nil
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": StarWarsAPI.Objects.Query.typename,
-        "hero": hero._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": StarWarsAPI.Objects.Query.typename,
+          "hero": hero._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(HeroNameConditionalBothSeparateQuery.Data.self)
+        ]
+      ))
     }
 
     /// Hero
@@ -78,13 +72,15 @@ public class HeroNameConditionalBothSeparateQuery: GraphQLQuery {
         __typename: String,
         name: String? = nil
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": __typename,
-          "name": name,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self)
-          ])
-        ]))
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": __typename,
+            "name": name,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(HeroNameConditionalBothSeparateQuery.Data.Hero.self)
+          ]
+        ))
       }
     }
   }

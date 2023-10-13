@@ -5,18 +5,10 @@
 
 public class HeroAndFriendsNamesWithFragmentQuery: GraphQLQuery {
   public static let operationName: String = "HeroAndFriendsNamesWithFragment"
-  public static let document: ApolloAPI.DocumentType = .automaticallyPersisted(
-    operationIdentifier: "1d3ad903dad146ff9d7aa09813fc01becd017489bfc1af8ffd178498730a5a26",
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
+    operationIdentifier: "07c54599c2b5f9d4215d1bff7f5f6ff458c983aa5c13338fd44b051210d5ecc6",
     definition: .init(
-      #"""
-      query HeroAndFriendsNamesWithFragment($episode: Episode) {
-        hero(episode: $episode) {
-          __typename
-          name
-          ...FriendsNames
-        }
-      }
-      """#,
+      #"query HeroAndFriendsNamesWithFragment($episode: Episode) { hero(episode: $episode) { __typename name ...FriendsNames } }"#,
       fragments: [FriendsNames.self]
     ))
 
@@ -42,13 +34,15 @@ public class HeroAndFriendsNamesWithFragmentQuery: GraphQLQuery {
     public init(
       hero: Hero? = nil
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": StarWarsAPI.Objects.Query.typename,
-        "hero": hero._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": StarWarsAPI.Objects.Query.typename,
+          "hero": hero._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(HeroAndFriendsNamesWithFragmentQuery.Data.self)
+        ]
+      ))
     }
 
     /// Hero
@@ -82,15 +76,17 @@ public class HeroAndFriendsNamesWithFragmentQuery: GraphQLQuery {
         name: String,
         friends: [FriendsNames.Friend?]? = nil
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": __typename,
-          "name": name,
-          "friends": friends._fieldData,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self),
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": __typename,
+            "name": name,
+            "friends": friends._fieldData,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(HeroAndFriendsNamesWithFragmentQuery.Data.Hero.self),
             ObjectIdentifier(FriendsNames.self)
-          ])
-        ]))
+          ]
+        ))
       }
     }
   }

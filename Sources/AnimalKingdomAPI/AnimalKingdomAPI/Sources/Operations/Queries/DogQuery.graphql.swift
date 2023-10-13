@@ -5,20 +5,9 @@
 
 public class DogQuery: GraphQLQuery {
   public static let operationName: String = "DogQuery"
-  public static let document: ApolloAPI.DocumentType = .notPersisted(
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
     definition: .init(
-      #"""
-      query DogQuery {
-        allAnimals {
-          __typename
-          id
-          skinCovering
-          ... on Dog {
-            ...DogFragment
-          }
-        }
-      }
-      """#,
+      #"query DogQuery { allAnimals { __typename id skinCovering ... on Dog { ...DogFragment } } }"#,
       fragments: [DogFragment.self]
     ))
 
@@ -38,13 +27,15 @@ public class DogQuery: GraphQLQuery {
     public init(
       allAnimals: [AllAnimal]
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": AnimalKingdomAPI.Objects.Query.typename,
-        "allAnimals": allAnimals._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": AnimalKingdomAPI.Objects.Query.typename,
+          "allAnimals": allAnimals._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(DogQuery.Data.self)
+        ]
+      ))
     }
 
     /// AllAnimal
@@ -72,14 +63,16 @@ public class DogQuery: GraphQLQuery {
         id: AnimalKingdomAPI.ID,
         skinCovering: GraphQLEnum<AnimalKingdomAPI.SkinCovering>? = nil
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": __typename,
-          "id": id,
-          "skinCovering": skinCovering,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self)
-          ])
-        ]))
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": __typename,
+            "id": id,
+            "skinCovering": skinCovering,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(DogQuery.Data.AllAnimal.self)
+          ]
+        ))
       }
 
       /// AllAnimal.AsDog
@@ -111,17 +104,19 @@ public class DogQuery: GraphQLQuery {
           skinCovering: GraphQLEnum<AnimalKingdomAPI.SkinCovering>? = nil,
           species: String
         ) {
-          self.init(_dataDict: DataDict(data: [
-            "__typename": AnimalKingdomAPI.Objects.Dog.typename,
-            "id": id,
-            "skinCovering": skinCovering,
-            "species": species,
-            "__fulfilled": Set([
-              ObjectIdentifier(Self.self),
-              ObjectIdentifier(AllAnimal.self),
+          self.init(_dataDict: DataDict(
+            data: [
+              "__typename": AnimalKingdomAPI.Objects.Dog.typename,
+              "id": id,
+              "skinCovering": skinCovering,
+              "species": species,
+            ],
+            fulfilledFragments: [
+              ObjectIdentifier(DogQuery.Data.AllAnimal.self),
+              ObjectIdentifier(DogQuery.Data.AllAnimal.AsDog.self),
               ObjectIdentifier(DogFragment.self)
-            ])
-          ]))
+            ]
+          ))
         }
       }
     }

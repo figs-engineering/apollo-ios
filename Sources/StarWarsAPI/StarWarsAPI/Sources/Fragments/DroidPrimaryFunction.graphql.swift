@@ -4,12 +4,9 @@
 @_exported import ApolloAPI
 
 public struct DroidPrimaryFunction: StarWarsAPI.SelectionSet, Fragment {
-  public static var fragmentDefinition: StaticString { """
-    fragment DroidPrimaryFunction on Droid {
-      __typename
-      primaryFunction
-    }
-    """ }
+  public static var fragmentDefinition: StaticString {
+    #"fragment DroidPrimaryFunction on Droid { __typename primaryFunction }"#
+  }
 
   public let __data: DataDict
   public init(_dataDict: DataDict) { __data = _dataDict }
@@ -26,12 +23,14 @@ public struct DroidPrimaryFunction: StarWarsAPI.SelectionSet, Fragment {
   public init(
     primaryFunction: String? = nil
   ) {
-    self.init(_dataDict: DataDict(data: [
-      "__typename": StarWarsAPI.Objects.Droid.typename,
-      "primaryFunction": primaryFunction,
-      "__fulfilled": Set([
-        ObjectIdentifier(Self.self)
-      ])
-    ]))
+    self.init(_dataDict: DataDict(
+      data: [
+        "__typename": StarWarsAPI.Objects.Droid.typename,
+        "primaryFunction": primaryFunction,
+      ],
+      fulfilledFragments: [
+        ObjectIdentifier(DroidPrimaryFunction.self)
+      ]
+    ))
   }
 }

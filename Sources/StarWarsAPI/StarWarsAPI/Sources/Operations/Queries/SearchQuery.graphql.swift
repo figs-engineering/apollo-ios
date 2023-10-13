@@ -5,31 +5,10 @@
 
 public class SearchQuery: GraphQLQuery {
   public static let operationName: String = "Search"
-  public static let document: ApolloAPI.DocumentType = .automaticallyPersisted(
-    operationIdentifier: "477b77c476899915498a56ae7bb835667b1e875cb94f6daa7f75e05018be2c3a",
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
+    operationIdentifier: "29ecc9c7acac3eab2585d305aed9f8257b448bc7ea57341a135d1fa476973ecb",
     definition: .init(
-      #"""
-      query Search($term: String) {
-        search(text: $term) {
-          __typename
-          ... on Human {
-            __typename
-            id
-            name
-          }
-          ... on Droid {
-            __typename
-            id
-            name
-          }
-          ... on Starship {
-            __typename
-            id
-            name
-          }
-        }
-      }
-      """#
+      #"query Search($term: String) { search(text: $term) { __typename ... on Human { __typename id name } ... on Droid { __typename id name } ... on Starship { __typename id name } } }"#
     ))
 
   public var term: GraphQLNullable<String>
@@ -54,13 +33,15 @@ public class SearchQuery: GraphQLQuery {
     public init(
       search: [Search?]? = nil
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": StarWarsAPI.Objects.Query.typename,
-        "search": search._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": StarWarsAPI.Objects.Query.typename,
+          "search": search._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(SearchQuery.Data.self)
+        ]
+      ))
     }
 
     /// Search
@@ -85,12 +66,14 @@ public class SearchQuery: GraphQLQuery {
       public init(
         __typename: String
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": __typename,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self)
-          ])
-        ]))
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": __typename,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(SearchQuery.Data.Search.self)
+          ]
+        ))
       }
 
       /// Search.AsHuman
@@ -116,15 +99,17 @@ public class SearchQuery: GraphQLQuery {
           id: StarWarsAPI.ID,
           name: String
         ) {
-          self.init(_dataDict: DataDict(data: [
-            "__typename": StarWarsAPI.Objects.Human.typename,
-            "id": id,
-            "name": name,
-            "__fulfilled": Set([
-              ObjectIdentifier(Self.self),
-              ObjectIdentifier(Search.self)
-            ])
-          ]))
+          self.init(_dataDict: DataDict(
+            data: [
+              "__typename": StarWarsAPI.Objects.Human.typename,
+              "id": id,
+              "name": name,
+            ],
+            fulfilledFragments: [
+              ObjectIdentifier(SearchQuery.Data.Search.self),
+              ObjectIdentifier(SearchQuery.Data.Search.AsHuman.self)
+            ]
+          ))
         }
       }
 
@@ -151,15 +136,17 @@ public class SearchQuery: GraphQLQuery {
           id: StarWarsAPI.ID,
           name: String
         ) {
-          self.init(_dataDict: DataDict(data: [
-            "__typename": StarWarsAPI.Objects.Droid.typename,
-            "id": id,
-            "name": name,
-            "__fulfilled": Set([
-              ObjectIdentifier(Self.self),
-              ObjectIdentifier(Search.self)
-            ])
-          ]))
+          self.init(_dataDict: DataDict(
+            data: [
+              "__typename": StarWarsAPI.Objects.Droid.typename,
+              "id": id,
+              "name": name,
+            ],
+            fulfilledFragments: [
+              ObjectIdentifier(SearchQuery.Data.Search.self),
+              ObjectIdentifier(SearchQuery.Data.Search.AsDroid.self)
+            ]
+          ))
         }
       }
 
@@ -186,15 +173,17 @@ public class SearchQuery: GraphQLQuery {
           id: StarWarsAPI.ID,
           name: String
         ) {
-          self.init(_dataDict: DataDict(data: [
-            "__typename": StarWarsAPI.Objects.Starship.typename,
-            "id": id,
-            "name": name,
-            "__fulfilled": Set([
-              ObjectIdentifier(Self.self),
-              ObjectIdentifier(Search.self)
-            ])
-          ]))
+          self.init(_dataDict: DataDict(
+            data: [
+              "__typename": StarWarsAPI.Objects.Starship.typename,
+              "id": id,
+              "name": name,
+            ],
+            fulfilledFragments: [
+              ObjectIdentifier(SearchQuery.Data.Search.self),
+              ObjectIdentifier(SearchQuery.Data.Search.AsStarship.self)
+            ]
+          ))
         }
       }
     }

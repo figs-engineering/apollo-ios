@@ -5,17 +5,10 @@
 
 public class HeroDetailsWithFragmentQuery: GraphQLQuery {
   public static let operationName: String = "HeroDetailsWithFragment"
-  public static let document: ApolloAPI.DocumentType = .automaticallyPersisted(
-    operationIdentifier: "b55bd9d56d1b5972345412b6adb88ceb64d6086c8051d2588d8ab701f0ee7c2f",
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
+    operationIdentifier: "09fe4fc0cbcde5f0ba08b1207526cae13eb2b73ca95f929d4153dd3f643b6780",
     definition: .init(
-      #"""
-      query HeroDetailsWithFragment($episode: Episode) {
-        hero(episode: $episode) {
-          __typename
-          ...HeroDetails
-        }
-      }
-      """#,
+      #"query HeroDetailsWithFragment($episode: Episode) { hero(episode: $episode) { __typename ...HeroDetails } }"#,
       fragments: [HeroDetails.self]
     ))
 
@@ -41,13 +34,15 @@ public class HeroDetailsWithFragmentQuery: GraphQLQuery {
     public init(
       hero: Hero? = nil
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": StarWarsAPI.Objects.Query.typename,
-        "hero": hero._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": StarWarsAPI.Objects.Query.typename,
+          "hero": hero._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(HeroDetailsWithFragmentQuery.Data.self)
+        ]
+      ))
     }
 
     /// Hero
@@ -80,14 +75,16 @@ public class HeroDetailsWithFragmentQuery: GraphQLQuery {
         __typename: String,
         name: String
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": __typename,
-          "name": name,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self),
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": __typename,
+            "name": name,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(HeroDetailsWithFragmentQuery.Data.Hero.self),
             ObjectIdentifier(HeroDetails.self)
-          ])
-        ]))
+          ]
+        ))
       }
 
       /// Hero.AsHuman
@@ -121,16 +118,19 @@ public class HeroDetailsWithFragmentQuery: GraphQLQuery {
           name: String,
           height: Double? = nil
         ) {
-          self.init(_dataDict: DataDict(data: [
-            "__typename": StarWarsAPI.Objects.Human.typename,
-            "name": name,
-            "height": height,
-            "__fulfilled": Set([
-              ObjectIdentifier(Self.self),
-              ObjectIdentifier(Hero.self),
-              ObjectIdentifier(HeroDetails.self)
-            ])
-          ]))
+          self.init(_dataDict: DataDict(
+            data: [
+              "__typename": StarWarsAPI.Objects.Human.typename,
+              "name": name,
+              "height": height,
+            ],
+            fulfilledFragments: [
+              ObjectIdentifier(HeroDetailsWithFragmentQuery.Data.Hero.self),
+              ObjectIdentifier(HeroDetailsWithFragmentQuery.Data.Hero.AsHuman.self),
+              ObjectIdentifier(HeroDetails.self),
+              ObjectIdentifier(HeroDetails.AsHuman.self)
+            ]
+          ))
         }
       }
 
@@ -165,16 +165,19 @@ public class HeroDetailsWithFragmentQuery: GraphQLQuery {
           name: String,
           primaryFunction: String? = nil
         ) {
-          self.init(_dataDict: DataDict(data: [
-            "__typename": StarWarsAPI.Objects.Droid.typename,
-            "name": name,
-            "primaryFunction": primaryFunction,
-            "__fulfilled": Set([
-              ObjectIdentifier(Self.self),
-              ObjectIdentifier(Hero.self),
-              ObjectIdentifier(HeroDetails.self)
-            ])
-          ]))
+          self.init(_dataDict: DataDict(
+            data: [
+              "__typename": StarWarsAPI.Objects.Droid.typename,
+              "name": name,
+              "primaryFunction": primaryFunction,
+            ],
+            fulfilledFragments: [
+              ObjectIdentifier(HeroDetailsWithFragmentQuery.Data.Hero.self),
+              ObjectIdentifier(HeroDetailsWithFragmentQuery.Data.Hero.AsDroid.self),
+              ObjectIdentifier(HeroDetails.self),
+              ObjectIdentifier(HeroDetails.AsDroid.self)
+            ]
+          ))
         }
       }
     }

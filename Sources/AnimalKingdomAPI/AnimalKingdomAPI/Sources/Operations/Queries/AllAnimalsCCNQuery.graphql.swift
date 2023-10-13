@@ -5,20 +5,9 @@
 
 public class AllAnimalsCCNQuery: GraphQLQuery {
   public static let operationName: String = "AllAnimalsCCN"
-  public static let document: ApolloAPI.DocumentType = .notPersisted(
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
     definition: .init(
-      #"""
-      query AllAnimalsCCN {
-        allAnimals {
-          __typename
-          height? {
-            __typename
-            feet?
-            inches!
-          }
-        }
-      }
-      """#
+      #"query AllAnimalsCCN { allAnimals { __typename height? { __typename feet? inches! } } }"#
     ))
 
   public init() {}
@@ -37,13 +26,15 @@ public class AllAnimalsCCNQuery: GraphQLQuery {
     public init(
       allAnimals: [AllAnimal]
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": AnimalKingdomAPI.Objects.Query.typename,
-        "allAnimals": allAnimals._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": AnimalKingdomAPI.Objects.Query.typename,
+          "allAnimals": allAnimals._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(AllAnimalsCCNQuery.Data.self)
+        ]
+      ))
     }
 
     /// AllAnimal
@@ -65,13 +56,15 @@ public class AllAnimalsCCNQuery: GraphQLQuery {
         __typename: String,
         height: Height? = nil
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": __typename,
-          "height": height._fieldData,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self)
-          ])
-        ]))
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": __typename,
+            "height": height._fieldData,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(AllAnimalsCCNQuery.Data.AllAnimal.self)
+          ]
+        ))
       }
 
       /// AllAnimal.Height
@@ -95,14 +88,16 @@ public class AllAnimalsCCNQuery: GraphQLQuery {
           feet: Int? = nil,
           inches: Int
         ) {
-          self.init(_dataDict: DataDict(data: [
-            "__typename": AnimalKingdomAPI.Objects.Height.typename,
-            "feet": feet,
-            "inches": inches,
-            "__fulfilled": Set([
-              ObjectIdentifier(Self.self)
-            ])
-          ]))
+          self.init(_dataDict: DataDict(
+            data: [
+              "__typename": AnimalKingdomAPI.Objects.Height.typename,
+              "feet": feet,
+              "inches": inches,
+            ],
+            fulfilledFragments: [
+              ObjectIdentifier(AllAnimalsCCNQuery.Data.AllAnimal.Height.self)
+            ]
+          ))
         }
       }
     }

@@ -4,13 +4,9 @@
 @_exported import ApolloAPI
 
 public struct CharacterNameWithNestedAppearsInFragment: StarWarsAPI.SelectionSet, Fragment {
-  public static var fragmentDefinition: StaticString { """
-    fragment CharacterNameWithNestedAppearsInFragment on Character {
-      __typename
-      name
-      ...CharacterAppearsIn
-    }
-    """ }
+  public static var fragmentDefinition: StaticString {
+    #"fragment CharacterNameWithNestedAppearsInFragment on Character { __typename name ...CharacterAppearsIn }"#
+  }
 
   public let __data: DataDict
   public init(_dataDict: DataDict) { __data = _dataDict }
@@ -39,14 +35,16 @@ public struct CharacterNameWithNestedAppearsInFragment: StarWarsAPI.SelectionSet
     name: String,
     appearsIn: [GraphQLEnum<StarWarsAPI.Episode>?]
   ) {
-    self.init(_dataDict: DataDict(data: [
-      "__typename": __typename,
-      "name": name,
-      "appearsIn": appearsIn,
-      "__fulfilled": Set([
-        ObjectIdentifier(Self.self),
+    self.init(_dataDict: DataDict(
+      data: [
+        "__typename": __typename,
+        "name": name,
+        "appearsIn": appearsIn,
+      ],
+      fulfilledFragments: [
+        ObjectIdentifier(CharacterNameWithNestedAppearsInFragment.self),
         ObjectIdentifier(CharacterAppearsIn.self)
-      ])
-    ]))
+      ]
+    ))
   }
 }

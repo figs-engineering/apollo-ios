@@ -4,12 +4,9 @@
 @_exported import ApolloAPI
 
 public struct CharacterName: StarWarsAPI.SelectionSet, Fragment {
-  public static var fragmentDefinition: StaticString { """
-    fragment CharacterName on Character {
-      __typename
-      name
-    }
-    """ }
+  public static var fragmentDefinition: StaticString {
+    #"fragment CharacterName on Character { __typename name }"#
+  }
 
   public let __data: DataDict
   public init(_dataDict: DataDict) { __data = _dataDict }
@@ -27,12 +24,14 @@ public struct CharacterName: StarWarsAPI.SelectionSet, Fragment {
     __typename: String,
     name: String
   ) {
-    self.init(_dataDict: DataDict(data: [
-      "__typename": __typename,
-      "name": name,
-      "__fulfilled": Set([
-        ObjectIdentifier(Self.self)
-      ])
-    ]))
+    self.init(_dataDict: DataDict(
+      data: [
+        "__typename": __typename,
+        "name": name,
+      ],
+      fulfilledFragments: [
+        ObjectIdentifier(CharacterName.self)
+      ]
+    ))
   }
 }

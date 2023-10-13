@@ -5,21 +5,10 @@
 
 public class HeroNameTypeSpecificConditionalInclusionQuery: GraphQLQuery {
   public static let operationName: String = "HeroNameTypeSpecificConditionalInclusion"
-  public static let document: ApolloAPI.DocumentType = .automaticallyPersisted(
-    operationIdentifier: "76aecc75265295818d3990000b17e32d5524ca85a4bc159ae8a3f8ec7ce91cc3",
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
+    operationIdentifier: "c05a6e91e1a3ddc3df21205ed7fca49cf6f3f171e4390ac98e7690c391b18baf",
     definition: .init(
-      #"""
-      query HeroNameTypeSpecificConditionalInclusion($episode: Episode, $includeName: Boolean!) {
-        hero(episode: $episode) {
-          __typename
-          name @include(if: $includeName)
-          ... on Droid {
-            __typename
-            name
-          }
-        }
-      }
-      """#
+      #"query HeroNameTypeSpecificConditionalInclusion($episode: Episode, $includeName: Boolean!) { hero(episode: $episode) { __typename name @include(if: $includeName) ... on Droid { __typename name } } }"#
     ))
 
   public var episode: GraphQLNullable<GraphQLEnum<Episode>>
@@ -52,13 +41,15 @@ public class HeroNameTypeSpecificConditionalInclusionQuery: GraphQLQuery {
     public init(
       hero: Hero? = nil
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": StarWarsAPI.Objects.Query.typename,
-        "hero": hero._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": StarWarsAPI.Objects.Query.typename,
+          "hero": hero._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(HeroNameTypeSpecificConditionalInclusionQuery.Data.self)
+        ]
+      ))
     }
 
     /// Hero
@@ -84,13 +75,15 @@ public class HeroNameTypeSpecificConditionalInclusionQuery: GraphQLQuery {
         __typename: String,
         name: String? = nil
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": __typename,
-          "name": name,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self)
-          ])
-        ]))
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": __typename,
+            "name": name,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(HeroNameTypeSpecificConditionalInclusionQuery.Data.Hero.self)
+          ]
+        ))
       }
 
       /// Hero.AsDroid
@@ -112,14 +105,16 @@ public class HeroNameTypeSpecificConditionalInclusionQuery: GraphQLQuery {
         public init(
           name: String
         ) {
-          self.init(_dataDict: DataDict(data: [
-            "__typename": StarWarsAPI.Objects.Droid.typename,
-            "name": name,
-            "__fulfilled": Set([
-              ObjectIdentifier(Self.self),
-              ObjectIdentifier(Hero.self)
-            ])
-          ]))
+          self.init(_dataDict: DataDict(
+            data: [
+              "__typename": StarWarsAPI.Objects.Droid.typename,
+              "name": name,
+            ],
+            fulfilledFragments: [
+              ObjectIdentifier(HeroNameTypeSpecificConditionalInclusionQuery.Data.Hero.self),
+              ObjectIdentifier(HeroNameTypeSpecificConditionalInclusionQuery.Data.Hero.AsDroid.self)
+            ]
+          ))
         }
       }
     }

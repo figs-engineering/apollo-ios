@@ -21,7 +21,8 @@ There are a number of base configuration properties, each representing a specifi
 | [`output`](#file-output) | Location and structure of the generated files and modules. |
 | [`options`](#output-options) | Rules and options to customize the generated code. |
 | [`experimentalFeatures`](#experimental-features) | Used to enable experimental features.<br/>*Note: These features could change at any time and are not guaranteed to always be available.* |
-| [`schemaDownloadConfiguration`](#schema-download-configuration) | Configuration to fetch a GraphQL schema before generation. |
+| [`schemaDownload`](#schema-download-configuration) | Configuration to fetch a GraphQL schema before generation. |
+| [`operationManifest`](#operation-manifest-configuration) | Configuration to generate operation manifests for persisted queries |
 
 ## Schema namespace
 
@@ -98,7 +99,6 @@ The properties to configure `output` are:
 | [`schemaTypes`](#schema-types) | Location and structure of the generated schema types files. |
 | [`operations`](#operations)    | Location and structure of the generated operation files such as queries, mutations, subscriptions, and fragments. |
 | [`testMocks`](#test-mocks)     | Location and structure of the test mock operation object files.<br/><br/>If `.none`, test mocks will not be generated. |
-| [`operationIdentifiersPath`](#operation-identifiers) | An absolute location to an operation identifier JSON map file. This can be used in conjunction with [APQs](../fetching/apqs). |
 
 <MultiCodeBlock>
 
@@ -116,7 +116,10 @@ The properties to configure `output` are:
 	"testMocks": {
 		"none": {}
 	},
-	"operationIdentifiersPath": "./generated/"
+	"operationManifest" : {
+		"path" : "./generated/operationIdentifiers.json",
+		"version" : "persistedQueries"
+	}
 }
 ```
 
@@ -166,17 +169,17 @@ The possible values for `moduleType` are:
 
 | Value | Description |
 | ----- | ----------- |
-| [`embeddedInTarget(name:)`](#embedded-in-target) | Indicates that you would like to include the generated module directly in your application target. |
+| [`embeddedInTarget(name:accessModifier:)`](#embedded-in-target) | Indicates that you would like to include the generated module directly in your application target. |
 | [`swiftPackageManager`](#swift-package-manager)  | Creates a schema module as an SPM package that can be included in your project. |
 | [`other`](#other-schema-module-types) 		   | Indicates that you would like to manually define a schema module using a third party package manager (such as Cocoapods). |
 
 #### Embedded in target
 
-**[`ModuleType.embeddedInTarget(name: String)`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/schematypesfileoutput/moduletype-swift.enum/embeddedintarget(name:))**
+**[`ModuleType.embeddedInTarget(name: String, accessModifier: AccessModifier)`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/schematypesfileoutput/moduletype-swift.enum/embeddedintarget(name:accessModifier:))**
 
 This option indicates that you would like to include the generated module directly in your application target.
 
-The `name` parameter must specify the name of the target the schema types will be included in. This will be used to generate `import` statements for generated operations.
+The `name` parameter must specify the name of the target the schema types will be included in. This will be used to generate `import` statements for generated operations. Use the `accessModifier` parameter to control the visibility of the generated code.
 
 No module will be created for the schema types. Instead, generated schema types will be enclosed in a [caseless namespace `enum`](https://www.swiftbysundell.com/articles/powerful-ways-to-use-swift-enums/#namespaces-and-non-initializable-types).
 
@@ -191,7 +194,8 @@ When creating a single target application, this option allows you to include Apo
 	"schemaTypes": {
 		"moduleType": {
 			"embeddedInTarget": {
-				"name": "MyApplicationTarget"
+				"name": "MyApplicationTarget",
+				"accessModifier": "internal"
 			}
 		},
 		"path": "./generated/schema/"
@@ -205,7 +209,7 @@ let configuration = ApolloCodegenConfiguration(
 	output: ApolloCodegenConfiguration.FileOutput(
 		schemaTypes: ApolloCodegenConfiguration.SchemaTypesFileOutput(
 			path: "./generated/schema/",
-			moduleType: .embeddedInTarget(name: "MyApplicationTarget")
+			moduleType: .embeddedInTarget(name: "MyApplicationTarget", accessModifier: .internal)
 		)
 		...
 	)
@@ -262,13 +266,13 @@ let configuration = ApolloCodegenConfiguration(
 
 **[`ModuleType.other`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/schematypesfileoutput/moduletype-swift.enum/other)**
 
-This option should be used when you would like to define a schema module using another package management system, such as CocoaPods, or manually creating Xcode targets.
+This value should be used when you would like to define a schema module using another package management system (such as CocoaPods), or you want more control over the generated package than what [`ModuleType.swiftPackageManager`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/schematypesfileoutput/moduletype-swift.enum/swiftpackagemanager) allows, or manually creating your own targets or modules in another way.
 
 `ModuleType.other` indicates to the Code Generation Engine that your schema types will be contained in their own target, rather than embedded in your application target. This affects the `import` statements in your generated operation definition files.
 
-Using this option, you are required to create a target for your schema module using your preferred package manager.
+Using this option, you are required to create a target, or module, for your schema module using your preferred package manager.
 
-> **Note:** The name of the target for your schema module must be the [`schemaNamespace`](#schema-namespace) provided in your configuration, as this will be used in the `import` statements of generated operation files.
+> **Note:** You must specify the name of the target, or module, you created in the [`schemaNamespace`](#schema-namespace) property of your configuration. This will be used for `import` statements as well as to fully qualify the referenced types in generated operation files.
 
 <MultiCodeBlock>
 
@@ -309,8 +313,8 @@ The `output.operations` property value determines the location of the generated 
 | Value | Description |
 | ----- | ----------- |
 | [`inSchemaModule`](#operations-in-the-schema-module) | Operation models will be included in the schema types module. |
-| [`relative(subpath:)`](#relative-operations-output) | Operation models will be output relative to their defining `.graphql` files. |
-| [`absolute(path:)`](#absolute-operations-output) | All operation object files will be located in the specified path. |
+| [`relative(subpath:accessModifier:)`](#relative-operations-output) | Operation models will be output relative to their defining `.graphql` files. |
+| [`absolute(path:accessModifier:)`](#absolute-operations-output) | All operation object files will be located in the specified path. |
 
 #### Operations in the schema module
 
@@ -324,13 +328,13 @@ This means the output location or your operation models is determined by the [`o
 
 #### Relative operations output
 
-**[`OperationsFileOutput.relative(subpath: String?)`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/operationsfileoutput/relative(subpath:))**
+**[`OperationsFileOutput.relative(subpath: String?, accessModifier: AccessModifier)`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/operationsfileoutput/relative(subpath:accessModifier:))**
 
 This option outputs your generated operation models relative to their GraphQL definition (`.graphql` files).
 
 Using relative operation outputs, you have complete control over where your operation definitions are generated. It is common practice to co-locate your operation and fragment models with the parts of your project that will use them.
 
-An optional `subpath` parameter can be provided to generate operation models in a subfolder that will be created within the directory of their defining GraphQL definition file. If no `subpath` is specified then all operation files will be generated alongside thier GraphQL definition files.
+An optional `subpath` parameter can be provided to generate operation models in a subfolder that will be created within the directory of their defining GraphQL definition file. If no `subpath` is specified then all operation files will be generated alongside thier GraphQL definition files. Use the `accessModifier` property to control the visibility of the generated code.
 
 > #### **Operation Models in a multi-module project:**
 >
@@ -347,11 +351,11 @@ An optional `subpath` parameter can be provided to generate operation models in 
 
 #### Absolute operations output
 
-**[`OperationsFileOutput.absolute(path: String)`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/operationsfileoutput/absolute(path:))**
+**[`OperationsFileOutput.absolute(path: String, accessModifier: AccessModifier)`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/operationsfileoutput/absolute(path:accessModifier:))**
 
 This option outputs all of your generated operation models in a single directory.
 
-Specify the directory for your operation models using the `path` parameter. This is resolved as a relative path from the directory containing your `apollo-codegen-config.json` file when using the CLI.
+Specify the directory for your operation models using the `path` parameter. This is resolved as a relative path from the directory containing your `apollo-codegen-config.json` file when using the CLI. Use the `accessModifier` property to control the visibility of the generated code.
 
 ### Test mocks
 
@@ -367,7 +371,7 @@ The `output.testMocks` option can be configured with the following values:
 | ----- | ----------- |
 | [`none`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/testmockfileoutput/none) | Test mocks will not be generated. |
 | [`swiftPackage(targetName:)`](#test-mocks-in-a-swift-package) | Test mock files will be generated and included in a target defined in an SPM package. |
-| [`absolute(path:)`](#absolute-test-mocks-output) | Test mock files will be generated at the specified path. |
+| [`absolute(path:accessModifier:)`](#absolute-test-mocks-output) | Test mock files will be generated at the specified path. |
 
 #### Test mocks in a Swift Package
 
@@ -381,36 +385,15 @@ The name of the test mock target can be specified with the `targetName` paramete
 
 #### Absolute test mocks output
 
-**[`TestMockFileOutput.absolute(path: String)`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/testmockfileoutput/absolute(path:))**
+**[`TestMockFileOutput.absolute(path: String, accessModifier: AccessModifier)`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/testmockfileoutput/absolute(path:accessModifier:))**
 
 This option outputs all of your generated test mocks in a single directory.
 
-Specify the directory for your test mocks using the `path` parameter. This is resolved as a relative path from the directory containing your `apollo-codegen-config.json` file when using the CLI.
+Specify the directory for your test mocks using the `path` parameter. This is resolved as a relative path from the directory containing your `apollo-codegen-config.json` file when using the CLI. Use the `accessModifier` property to control the visibility of the generated code.
 
 > **Note:** When using this option, you are responsible for ensuring the generated test mocks are linked to your test target.
 >
 > Test mocks generated this way may also be manually embedded in a test utility module that is imported by your test target.
-
-### Operation identifiers
-
-Providing a path for this property will generate a JSON document with all your operations and their computed identifier hashes. This document can be used to pre-register the identifiers for your operations with an Apollo Server instance for use with [Automatic Persisted Queries](./../fetching/apqs).
-
-```json title="CLI Configuration JSON"
-{
-	"b02d2d734060114f64b24338486748f4f1f00838e07a293cc4e0f73f98fe3dad": {
-		"name": "TestQuery",
-		"source": "query TestQuery {\\n  test\\n}"
-	},
-	"50ed8cda22910b3b708bc69402626f9fe4f1bbaeafb40df9084d029fade5bab1": {
-		"name": "TestMutation",
-		"source": "mutation TestMutation {\\n  update {\\n    result\\n  }\\n}"
-	},
-	"55f75259c34f0ccc6b131d23545d9fa79885c93ec785176bd9b6d3c4062fcaed": {
-		"name": "TestSubscription",
-		"source": "subscription TestSubscription {\\n  watched\\n}"
-	}
-}
-```
 
 ## Output options
 
@@ -421,15 +404,15 @@ The top-level properties are:
 | Property Name | Description |
 | ------------- | ----------- |
 | [`additionalInflectionRules`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/outputoptions/additionalinflectionrules) | Any non-default rules for pluralization or singularization of type names. |
-| [`queryStringLiteralFormat`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/outputoptions/querystringliteralformat) | Formatting of the GraphQL query string literal that is included in each generated operation object. |
 | [`deprecatedEnumCases`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/outputoptions/deprecatedenumcases) | Annotate generated Swift enums with the Swift `@available` attribute for GraphQL enum cases annotated with the built-in [`@deprecated` directive](https://spec.graphql.org/draft/#sec--deprecated). |
 | [`schemaDocumentation`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/outputoptions/schemadocumentation) | Include or exclude [schema documentation](https://spec.graphql.org/draft/#sec-Descriptions) in the generated files. |
 | [`selectionSetInitializers`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/outputoptions/selectionsetinitializers) | Generate initializers for your generated selection set models. |
-| [`apqs`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/outputoptions/apqs) | Whether the generated operations should use Automatic Persisted Queries. |
+| [`operationDocumentFormat`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/outputoptions/operationdocumentformat) | How to generate the operation documents for your generated operations. This can be used to generate operation identifiers for use with a server that supports [Persisted Queries or Automatic Persisted Queries](./../fetching/persisted-queries) |
 | [`cocoapodsCompatibleImportStatements`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/outputoptions/cocoapodscompatibleimportstatements) | Generate import statements that are compatible with including `Apollo` via Cocoapods. |
 | [`warningsOnDeprecatedUsage`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/outputoptions/warningsondeprecatedusage) | Annotate generated Swift code with the Swift `@available` attribute and `@deprecated` argument for parts of the GraphQL schema annotated with the built-in [`@deprecated` directive](https://spec.graphql.org/draft/#sec--deprecated). |
 | [`conversionStrategies`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/outputoptions/conversionstrategies) | Rules for how to convert the names of values from the schema in generated code. |
 | [`pruneGeneratedFiles`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/outputoptions/prunegeneratedfiles) | Whether unused generated files will be automatically deleted. |
+| [`markOperationDefinitionsAsFinal`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/outputoptions/markOperationDefinitionsAsFinal) | Whether generated GraphQL operation and local cache mutation class types will be marked as `final`. |
 
 <MultiCodeBlock>
 
@@ -441,7 +424,6 @@ The top-level properties are:
 			"singularRegex": "animal"
 		}
 	}],
-	"queryStringLiteralFormat": "multiline",
 	"deprecatedEnumCases": "include",
 	"schemaDocumentation": "include",
 	"selectionSetInitializers" : {
@@ -453,13 +435,15 @@ The top-level properties are:
 			"MyFragment"
 		]
 	},
-	"apqs": "disabled",
+	"operationDocumentFormat" : ["definition", "operationId"],
 	"cocoapodsCompatibleImportStatements": false,
 	"warningsOnDeprecatedUsage": "include",
 	"conversionStrategies": {
-		"enumCases": "camelCase"
+		"enumCases": "camelCase",
+		"fieldAccessors": "default"
 	},
-	"pruneGeneratedFiles": true
+	"pruneGeneratedFiles": true,
+	"markOperationDefinitionsAsFinal": true
 }
 ```
 
@@ -473,7 +457,6 @@ let configuration = ApolloCodegenConfiguration(
 				replacementRegex: "animals"
 			)
 		],
-		queryStringLiteralFormat: .multiline,
 		deprecatedEnumCases: .include,
 		schemaDocumentation: .include,
 		selectionSetInitializers: [
@@ -481,13 +464,15 @@ let configuration = ApolloCodegenConfiguration(
 			.operation(named: "MyOperation"),
 			.fragment(named: "MyFragment)
 		],
-		apqs: .disabled,
+		operationDocumentFormat: [.document, .operationId],
 		cocoapodsCompatibleImportStatements: false,
 		warningsOnDeprecatedUsage: .include,
 		conversionStrategies: ApolloCodegenConfiguration.ConversionStrategies(
-			enumCases: .camelCase
+			enumCases: .camelCase,
+			fieldAccessors: .default
 		),
-		pruneGeneratedFiles: true
+		pruneGeneratedFiles: true,
+		markOperationDefinitionsAsFinal: true
 	)
 )
 ```
@@ -560,7 +545,7 @@ The properties you will need to configure are:
 <MultiCodeBlock>
 
 ```json title="CLI Configuration JSON"
-"schemaDownloadConfiguration": {
+"schemaDownload": {
 	"downloadMethod": {
 		"apolloRegistry": {
 			"_0": {
@@ -582,7 +567,7 @@ The properties you will need to configure are:
 ```swift title="Swift Codegen Setup"
 let configuration = ApolloCodegenConfiguration(
   // Other properties not shown
-  schemaDownloadConfiguration: ApolloSchemaDownloadConfiguration(
+  schemaDownload: ApolloSchemaDownloadConfiguration(
     using: .apolloRegistry(.init(
       apiKey: "your-api-key",
       graphID: "your-graphid",
@@ -616,7 +601,7 @@ The properties you will need to configure are:
 <MultiCodeBlock>
 
 ```json title="CLI Configuration JSON"
-"schemaDownloadConfiguration": {
+"schemaDownload": {
 	"downloadMethod": {
 		"introspection": {
 			"endpointURL": "https://server.com",
@@ -636,7 +621,7 @@ The properties you will need to configure are:
 ```swift title="Swift Codegen Setup"
 let configuration = ApolloCodegenConfiguration(
 	// Other properties not shown
-	schemaDownloadConfiguration: ApolloSchemaDownloadConfiguration(
+	schemaDownload: ApolloSchemaDownloadConfiguration(
 		using: .introspection(
 			endpointURL: URL(string: "https://server.com")!),
 		timeout: 60.0,
@@ -648,3 +633,125 @@ let configuration = ApolloCodegenConfiguration(
 </MultiCodeBlock>
 
 For more details, see the section on [downloading a schema](./downloading-schema).
+
+## Operation Manifest Configuration
+
+Optional settings used to configure generation of the operation identifier manifest for use with [Persisted Queries](./../fetching/persisted-queries).
+
+| Property Name | Description |
+| ------------- | ----------- |
+| `path` | Local path where the generated operation manifest file should be written. |
+| [`version`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/operationmanifestfileoutput/version) | The version format to use when generating the operation manifest. |
+| [`generateManifestOnCodeGeneration`](https://www.apollographql.com/docs/ios/docc/documentation/apollocodegenlib/apollocodegenconfiguration/operationmanifestconfiguration/generateManifestOnCodeGeneration) | Whether or not the operation manifest should be generated every time code generation is run. Defaults to false. |
+
+<MultiCodeBlock>
+
+```json title="CLI Configuration JSON"
+"operationManifest" : {
+  "generateManifestOnCodeGeneration" : false,
+  "path" : "/operation/identifiers/path",
+  "version" : "persistedQueries"
+}
+```
+
+```swift title="Swift Codegen Setup"
+let configuration = ApolloCodegenConfiguration(
+    // Other properties not shown
+    operationManifest: .init(
+        path: "./manifest/operationManifest.json",
+        version: .persistedQueries,
+        generateManifestOnCodeGeneration: false
+    )
+)
+```
+
+</MultiCodeBlock>
+
+## Full Codegen Configuration Example
+
+Below is an example that illustrates an `apollo-codegen-config.json` where every available option is configured in some way to show its usage and formatting:
+
+```json title="apollo-codegen-config.json"
+{
+  "schemaNamespace" : "MySchema",
+  "schemaDownload": {
+    "downloadMethod": {
+        "introspection": {
+            "endpointURL": "https://server.com",
+            "httpMethod": {
+                "POST": {}
+            },
+            "includeDeprecatedInputValues": false,
+            "outputFormat": "SDL"
+        }
+    },
+    "downloadTimeout": 60,
+    "headers": [],
+    "outputPath": "./graphql/"
+  },
+  "experimentalFeatures" : {
+    "clientControlledNullability" : true,
+    "legacySafelistingCompatibleOperations" : true
+  },
+  "operationManifest" : {
+    "generateManifestOnCodeGeneration" : false,
+    "path" : "/operation/identifiers/path",
+    "version" : "persistedQueries"
+  },
+  "input" : {
+    "operationSearchPaths" : [
+      "/search/path/**/*.graphql"
+    ],
+    "schemaSearchPaths" : [
+      "/path/to/schema.graphqls"
+    ]
+  },
+  "output" : {
+    "operations" : {
+      "absolute" : {
+        "accessModifier" : "internal",
+        "path" : "/absolute/path"
+      }
+    },
+    "schemaTypes" : {
+      "moduleType" : {
+        "embeddedInTarget" : {
+          "accessModifier" : "public",
+          "name" : "SomeTarget"
+        }
+      },
+      "path" : "/output/path"
+    },
+    "testMocks" : {
+      "swiftPackage" : {
+        "targetName" : "SchemaTestMocks"
+      }
+    }
+  },
+  "options" : {
+    "additionalInflectionRules" : [
+      {
+        "pluralization" : {
+          "replacementRegex" : "animals",
+          "singularRegex" : "animal"
+        }
+      }
+    ],
+    "cocoapodsCompatibleImportStatements" : true,
+    "conversionStrategies" : {
+      "enumCases" : "none",
+      "fieldAccessors" : "camelCase"
+    },
+    "deprecatedEnumCases" : "exclude",
+    "operationDocumentFormat" : [
+      "definition"
+    ],
+    "pruneGeneratedFiles" : false,
+    "schemaDocumentation" : "exclude",
+    "selectionSetInitializers" : {
+      "localCacheMutations" : true
+    },
+    "warningsOnDeprecatedUsage" : "exclude"
+  }
+}
+```

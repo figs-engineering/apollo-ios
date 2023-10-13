@@ -97,13 +97,14 @@
     {
       "identifiers" : [
         "doc:\/\/Apollo\/documentation\/Apollo\/InterceptorRequestChain\/ChainError\/invalidIndex(chain:index:)",
-        "doc:\/\/Apollo\/documentation\/Apollo\/InterceptorRequestChain\/ChainError\/noInterceptors"
+        "doc:\/\/Apollo\/documentation\/Apollo\/InterceptorRequestChain\/ChainError\/noInterceptors",
+        "doc:\/\/Apollo\/documentation\/Apollo\/InterceptorRequestChain\/ChainError\/unknownInterceptor(id:)"
       ],
       "title" : "Enumeration Cases"
     },
     {
       "identifiers" : [
-        "doc:\/\/Apollo\/documentation\/Apollo\/InterceptorRequestChain\/ChainError\/errorDescription-3qusm"
+        "doc:\/\/Apollo\/documentation\/Apollo\/InterceptorRequestChain\/ChainError\/errorDescription"
       ],
       "title" : "Instance Properties"
     },
@@ -236,7 +237,7 @@
   "type" : "topic",
   "url" : "\/documentation\/apollo\/interceptorrequestchain\/chainerror\/localizederror-implementations"
 },
-"doc://Apollo/documentation/Apollo/InterceptorRequestChain/ChainError/errorDescription-3qusm": {
+"doc://Apollo/documentation/Apollo/InterceptorRequestChain/ChainError/errorDescription": {
   "abstract" : [
 
   ],
@@ -267,12 +268,12 @@
       "text" : "?"
     }
   ],
-  "identifier" : "doc:\/\/Apollo\/documentation\/Apollo\/InterceptorRequestChain\/ChainError\/errorDescription-3qusm",
+  "identifier" : "doc:\/\/Apollo\/documentation\/Apollo\/InterceptorRequestChain\/ChainError\/errorDescription",
   "kind" : "symbol",
   "role" : "symbol",
   "title" : "errorDescription",
   "type" : "topic",
-  "url" : "\/documentation\/apollo\/interceptorrequestchain\/chainerror\/errordescription-3qusm"
+  "url" : "\/documentation\/apollo\/interceptorrequestchain\/chainerror\/errordescription"
 },
 "doc://Apollo/documentation/Apollo/InterceptorRequestChain/ChainError/invalidIndex(chain:index:)": {
   "abstract" : [
@@ -361,6 +362,52 @@
   "title" : "InterceptorRequestChain.ChainError.noInterceptors",
   "type" : "topic",
   "url" : "\/documentation\/apollo\/interceptorrequestchain\/chainerror\/nointerceptors"
+},
+"doc://Apollo/documentation/Apollo/InterceptorRequestChain/ChainError/unknownInterceptor(id:)": {
+  "abstract" : [
+
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "case"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "unknownInterceptor"
+    },
+    {
+      "kind" : "text",
+      "text" : "("
+    },
+    {
+      "kind" : "externalParam",
+      "text" : "id"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:SS",
+      "text" : "String"
+    },
+    {
+      "kind" : "text",
+      "text" : ")"
+    }
+  ],
+  "identifier" : "doc:\/\/Apollo\/documentation\/Apollo\/InterceptorRequestChain\/ChainError\/unknownInterceptor(id:)",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "InterceptorRequestChain.ChainError.unknownInterceptor(id:)",
+  "type" : "topic",
+  "url" : "\/documentation\/apollo\/interceptorrequestchain\/chainerror\/unknowninterceptor(id:)"
 },
 "doc://Apollo/s5ErrorP": {
   "identifier" : "doc:\/\/Apollo\/s5ErrorP",

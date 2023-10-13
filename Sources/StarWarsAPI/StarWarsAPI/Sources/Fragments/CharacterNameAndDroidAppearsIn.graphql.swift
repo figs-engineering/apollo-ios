@@ -4,16 +4,9 @@
 @_exported import ApolloAPI
 
 public struct CharacterNameAndDroidAppearsIn: StarWarsAPI.SelectionSet, Fragment {
-  public static var fragmentDefinition: StaticString { """
-    fragment CharacterNameAndDroidAppearsIn on Character {
-      __typename
-      name
-      ... on Droid {
-        __typename
-        appearsIn
-      }
-    }
-    """ }
+  public static var fragmentDefinition: StaticString {
+    #"fragment CharacterNameAndDroidAppearsIn on Character { __typename name ... on Droid { __typename appearsIn } }"#
+  }
 
   public let __data: DataDict
   public init(_dataDict: DataDict) { __data = _dataDict }
@@ -34,13 +27,15 @@ public struct CharacterNameAndDroidAppearsIn: StarWarsAPI.SelectionSet, Fragment
     __typename: String,
     name: String
   ) {
-    self.init(_dataDict: DataDict(data: [
-      "__typename": __typename,
-      "name": name,
-      "__fulfilled": Set([
-        ObjectIdentifier(Self.self)
-      ])
-    ]))
+    self.init(_dataDict: DataDict(
+      data: [
+        "__typename": __typename,
+        "name": name,
+      ],
+      fulfilledFragments: [
+        ObjectIdentifier(CharacterNameAndDroidAppearsIn.self)
+      ]
+    ))
   }
 
   /// AsDroid
@@ -65,15 +60,17 @@ public struct CharacterNameAndDroidAppearsIn: StarWarsAPI.SelectionSet, Fragment
       appearsIn: [GraphQLEnum<StarWarsAPI.Episode>?],
       name: String
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": StarWarsAPI.Objects.Droid.typename,
-        "appearsIn": appearsIn,
-        "name": name,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self),
-          ObjectIdentifier(CharacterNameAndDroidAppearsIn.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": StarWarsAPI.Objects.Droid.typename,
+          "appearsIn": appearsIn,
+          "name": name,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(CharacterNameAndDroidAppearsIn.self),
+          ObjectIdentifier(CharacterNameAndDroidAppearsIn.AsDroid.self)
+        ]
+      ))
     }
   }
 }

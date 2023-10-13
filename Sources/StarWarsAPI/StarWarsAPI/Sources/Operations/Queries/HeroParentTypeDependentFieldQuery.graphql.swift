@@ -5,39 +5,10 @@
 
 public class HeroParentTypeDependentFieldQuery: GraphQLQuery {
   public static let operationName: String = "HeroParentTypeDependentField"
-  public static let document: ApolloAPI.DocumentType = .automaticallyPersisted(
-    operationIdentifier: "39eb41b5a9477c36fa529c23d6f0de6ebcc0312daf5bdcfe208d5baec752dc5b",
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
+    operationIdentifier: "dc3b582f2baa66cfb5cd53eb3c215933427fd0537076767c8e0ef894d3990d15",
     definition: .init(
-      #"""
-      query HeroParentTypeDependentField($episode: Episode) {
-        hero(episode: $episode) {
-          __typename
-          name
-          ... on Human {
-            __typename
-            friends {
-              __typename
-              name
-              ... on Human {
-                __typename
-                height(unit: FOOT)
-              }
-            }
-          }
-          ... on Droid {
-            __typename
-            friends {
-              __typename
-              name
-              ... on Human {
-                __typename
-                height(unit: METER)
-              }
-            }
-          }
-        }
-      }
-      """#
+      #"query HeroParentTypeDependentField($episode: Episode) { hero(episode: $episode) { __typename name ... on Human { __typename friends { __typename name ... on Human { __typename height(unit: FOOT) } } } ... on Droid { __typename friends { __typename name ... on Human { __typename height(unit: METER) } } } } }"#
     ))
 
   public var episode: GraphQLNullable<GraphQLEnum<Episode>>
@@ -62,13 +33,15 @@ public class HeroParentTypeDependentFieldQuery: GraphQLQuery {
     public init(
       hero: Hero? = nil
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": StarWarsAPI.Objects.Query.typename,
-        "hero": hero._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": StarWarsAPI.Objects.Query.typename,
+          "hero": hero._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(HeroParentTypeDependentFieldQuery.Data.self)
+        ]
+      ))
     }
 
     /// Hero
@@ -96,13 +69,15 @@ public class HeroParentTypeDependentFieldQuery: GraphQLQuery {
         __typename: String,
         name: String
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": __typename,
-          "name": name,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self)
-          ])
-        ]))
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": __typename,
+            "name": name,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(HeroParentTypeDependentFieldQuery.Data.Hero.self)
+          ]
+        ))
       }
 
       /// Hero.AsHuman
@@ -127,15 +102,17 @@ public class HeroParentTypeDependentFieldQuery: GraphQLQuery {
           friends: [Friend?]? = nil,
           name: String
         ) {
-          self.init(_dataDict: DataDict(data: [
-            "__typename": StarWarsAPI.Objects.Human.typename,
-            "friends": friends._fieldData,
-            "name": name,
-            "__fulfilled": Set([
-              ObjectIdentifier(Self.self),
-              ObjectIdentifier(Hero.self)
-            ])
-          ]))
+          self.init(_dataDict: DataDict(
+            data: [
+              "__typename": StarWarsAPI.Objects.Human.typename,
+              "friends": friends._fieldData,
+              "name": name,
+            ],
+            fulfilledFragments: [
+              ObjectIdentifier(HeroParentTypeDependentFieldQuery.Data.Hero.self),
+              ObjectIdentifier(HeroParentTypeDependentFieldQuery.Data.Hero.AsHuman.self)
+            ]
+          ))
         }
 
         /// Hero.AsHuman.Friend
@@ -161,13 +138,15 @@ public class HeroParentTypeDependentFieldQuery: GraphQLQuery {
             __typename: String,
             name: String
           ) {
-            self.init(_dataDict: DataDict(data: [
-              "__typename": __typename,
-              "name": name,
-              "__fulfilled": Set([
-                ObjectIdentifier(Self.self)
-              ])
-            ]))
+            self.init(_dataDict: DataDict(
+              data: [
+                "__typename": __typename,
+                "name": name,
+              ],
+              fulfilledFragments: [
+                ObjectIdentifier(HeroParentTypeDependentFieldQuery.Data.Hero.AsHuman.Friend.self)
+              ]
+            ))
           }
 
           /// Hero.AsHuman.Friend.AsHuman
@@ -192,15 +171,17 @@ public class HeroParentTypeDependentFieldQuery: GraphQLQuery {
               height: Double? = nil,
               name: String
             ) {
-              self.init(_dataDict: DataDict(data: [
-                "__typename": StarWarsAPI.Objects.Human.typename,
-                "height": height,
-                "name": name,
-                "__fulfilled": Set([
-                  ObjectIdentifier(Self.self),
-                  ObjectIdentifier(Hero.AsHuman.Friend.self)
-                ])
-              ]))
+              self.init(_dataDict: DataDict(
+                data: [
+                  "__typename": StarWarsAPI.Objects.Human.typename,
+                  "height": height,
+                  "name": name,
+                ],
+                fulfilledFragments: [
+                  ObjectIdentifier(HeroParentTypeDependentFieldQuery.Data.Hero.AsHuman.Friend.self),
+                  ObjectIdentifier(HeroParentTypeDependentFieldQuery.Data.Hero.AsHuman.Friend.AsHuman.self)
+                ]
+              ))
             }
           }
         }
@@ -228,15 +209,17 @@ public class HeroParentTypeDependentFieldQuery: GraphQLQuery {
           friends: [Friend?]? = nil,
           name: String
         ) {
-          self.init(_dataDict: DataDict(data: [
-            "__typename": StarWarsAPI.Objects.Droid.typename,
-            "friends": friends._fieldData,
-            "name": name,
-            "__fulfilled": Set([
-              ObjectIdentifier(Self.self),
-              ObjectIdentifier(Hero.self)
-            ])
-          ]))
+          self.init(_dataDict: DataDict(
+            data: [
+              "__typename": StarWarsAPI.Objects.Droid.typename,
+              "friends": friends._fieldData,
+              "name": name,
+            ],
+            fulfilledFragments: [
+              ObjectIdentifier(HeroParentTypeDependentFieldQuery.Data.Hero.self),
+              ObjectIdentifier(HeroParentTypeDependentFieldQuery.Data.Hero.AsDroid.self)
+            ]
+          ))
         }
 
         /// Hero.AsDroid.Friend
@@ -262,13 +245,15 @@ public class HeroParentTypeDependentFieldQuery: GraphQLQuery {
             __typename: String,
             name: String
           ) {
-            self.init(_dataDict: DataDict(data: [
-              "__typename": __typename,
-              "name": name,
-              "__fulfilled": Set([
-                ObjectIdentifier(Self.self)
-              ])
-            ]))
+            self.init(_dataDict: DataDict(
+              data: [
+                "__typename": __typename,
+                "name": name,
+              ],
+              fulfilledFragments: [
+                ObjectIdentifier(HeroParentTypeDependentFieldQuery.Data.Hero.AsDroid.Friend.self)
+              ]
+            ))
           }
 
           /// Hero.AsDroid.Friend.AsHuman
@@ -293,15 +278,17 @@ public class HeroParentTypeDependentFieldQuery: GraphQLQuery {
               height: Double? = nil,
               name: String
             ) {
-              self.init(_dataDict: DataDict(data: [
-                "__typename": StarWarsAPI.Objects.Human.typename,
-                "height": height,
-                "name": name,
-                "__fulfilled": Set([
-                  ObjectIdentifier(Self.self),
-                  ObjectIdentifier(Hero.AsDroid.Friend.self)
-                ])
-              ]))
+              self.init(_dataDict: DataDict(
+                data: [
+                  "__typename": StarWarsAPI.Objects.Human.typename,
+                  "height": height,
+                  "name": name,
+                ],
+                fulfilledFragments: [
+                  ObjectIdentifier(HeroParentTypeDependentFieldQuery.Data.Hero.AsDroid.Friend.self),
+                  ObjectIdentifier(HeroParentTypeDependentFieldQuery.Data.Hero.AsDroid.Friend.AsHuman.self)
+                ]
+              ))
             }
           }
         }

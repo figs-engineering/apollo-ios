@@ -5,18 +5,10 @@
 
 public class CreateAwesomeReviewMutation: GraphQLMutation {
   public static let operationName: String = "CreateAwesomeReview"
-  public static let document: ApolloAPI.DocumentType = .automaticallyPersisted(
-    operationIdentifier: "4a1250de93ebcb5cad5870acf15001112bf27bb963e8709555b5ff67a1405374",
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
+    operationIdentifier: "36634ea692d455075551673f2f529e85c8acf6f5e3707243781324cd3d968d02",
     definition: .init(
-      #"""
-      mutation CreateAwesomeReview {
-        createReview(episode: JEDI, review: {stars: 10, commentary: "This is awesome!"}) {
-          __typename
-          stars
-          commentary
-        }
-      }
-      """#
+      #"mutation CreateAwesomeReview { createReview(episode: JEDI, review: {stars: 10, commentary: "This is awesome!"}) { __typename stars commentary } }"#
     ))
 
   public init() {}
@@ -41,13 +33,15 @@ public class CreateAwesomeReviewMutation: GraphQLMutation {
     public init(
       createReview: CreateReview? = nil
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": StarWarsAPI.Objects.Mutation.typename,
-        "createReview": createReview._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": StarWarsAPI.Objects.Mutation.typename,
+          "createReview": createReview._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(CreateAwesomeReviewMutation.Data.self)
+        ]
+      ))
     }
 
     /// CreateReview
@@ -73,14 +67,16 @@ public class CreateAwesomeReviewMutation: GraphQLMutation {
         stars: Int,
         commentary: String? = nil
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": StarWarsAPI.Objects.Review.typename,
-          "stars": stars,
-          "commentary": commentary,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self)
-          ])
-        ]))
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": StarWarsAPI.Objects.Review.typename,
+            "stars": stars,
+            "commentary": commentary,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(CreateAwesomeReviewMutation.Data.CreateReview.self)
+          ]
+        ))
       }
     }
   }

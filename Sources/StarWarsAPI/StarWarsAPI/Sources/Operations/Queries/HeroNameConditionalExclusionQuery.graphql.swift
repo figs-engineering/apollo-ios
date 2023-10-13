@@ -5,17 +5,10 @@
 
 public class HeroNameConditionalExclusionQuery: GraphQLQuery {
   public static let operationName: String = "HeroNameConditionalExclusion"
-  public static let document: ApolloAPI.DocumentType = .automaticallyPersisted(
-    operationIdentifier: "3dd42259adf2d0598e89e0279bee2c128a7913f02b1da6aa43f3b5def6a8a1f8",
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
+    operationIdentifier: "b6d6f1d10cde449adbf2891d489159006188e63d4dea4edb9a23eddcbe0bd361",
     definition: .init(
-      #"""
-      query HeroNameConditionalExclusion($skipName: Boolean!) {
-        hero {
-          __typename
-          name @skip(if: $skipName)
-        }
-      }
-      """#
+      #"query HeroNameConditionalExclusion($skipName: Boolean!) { hero { __typename name @skip(if: $skipName) } }"#
     ))
 
   public var skipName: Bool
@@ -40,13 +33,15 @@ public class HeroNameConditionalExclusionQuery: GraphQLQuery {
     public init(
       hero: Hero? = nil
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": StarWarsAPI.Objects.Query.typename,
-        "hero": hero._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": StarWarsAPI.Objects.Query.typename,
+          "hero": hero._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(HeroNameConditionalExclusionQuery.Data.self)
+        ]
+      ))
     }
 
     /// Hero
@@ -69,13 +64,15 @@ public class HeroNameConditionalExclusionQuery: GraphQLQuery {
         __typename: String,
         name: String? = nil
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": __typename,
-          "name": name,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self)
-          ])
-        ]))
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": __typename,
+            "name": name,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(HeroNameConditionalExclusionQuery.Data.Hero.self)
+          ]
+        ))
       }
     }
   }

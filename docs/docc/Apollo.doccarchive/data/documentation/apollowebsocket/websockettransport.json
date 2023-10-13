@@ -112,9 +112,10 @@
     },
     {
       "identifiers" : [
-        "doc:\/\/ApolloWebSocket\/documentation\/ApolloWebSocket\/WebSocketTransport\/clientName-7plo0",
-        "doc:\/\/ApolloWebSocket\/documentation\/ApolloWebSocket\/WebSocketTransport\/clientVersion-919yz",
-        "doc:\/\/ApolloWebSocket\/documentation\/ApolloWebSocket\/WebSocketTransport\/delegate"
+        "doc:\/\/ApolloWebSocket\/documentation\/ApolloWebSocket\/WebSocketTransport\/clientName",
+        "doc:\/\/ApolloWebSocket\/documentation\/ApolloWebSocket\/WebSocketTransport\/clientVersion",
+        "doc:\/\/ApolloWebSocket\/documentation\/ApolloWebSocket\/WebSocketTransport\/delegate",
+        "doc:\/\/ApolloWebSocket\/documentation\/ApolloWebSocket\/WebSocketTransport\/enableSOCKSProxy"
       ],
       "title" : "Instance Properties"
     },
@@ -325,7 +326,7 @@
   "type" : "topic",
   "url" : "\/documentation\/apollowebsocket\/websockettransport\/websocketclientdelegate-implementations"
 },
-"doc://ApolloWebSocket/documentation/ApolloWebSocket/WebSocketTransport/clientName-7plo0": {
+"doc://ApolloWebSocket/documentation/ApolloWebSocket/WebSocketTransport/clientName": {
   "abstract" : [
 
   ],
@@ -352,14 +353,14 @@
       "text" : "String"
     }
   ],
-  "identifier" : "doc:\/\/ApolloWebSocket\/documentation\/ApolloWebSocket\/WebSocketTransport\/clientName-7plo0",
+  "identifier" : "doc:\/\/ApolloWebSocket\/documentation\/ApolloWebSocket\/WebSocketTransport\/clientName",
   "kind" : "symbol",
   "role" : "symbol",
   "title" : "clientName",
   "type" : "topic",
-  "url" : "\/documentation\/apollowebsocket\/websockettransport\/clientname-7plo0"
+  "url" : "\/documentation\/apollowebsocket\/websockettransport\/clientname"
 },
-"doc://ApolloWebSocket/documentation/ApolloWebSocket/WebSocketTransport/clientVersion-919yz": {
+"doc://ApolloWebSocket/documentation/ApolloWebSocket/WebSocketTransport/clientVersion": {
   "abstract" : [
 
   ],
@@ -386,12 +387,12 @@
       "text" : "String"
     }
   ],
-  "identifier" : "doc:\/\/ApolloWebSocket\/documentation\/ApolloWebSocket\/WebSocketTransport\/clientVersion-919yz",
+  "identifier" : "doc:\/\/ApolloWebSocket\/documentation\/ApolloWebSocket\/WebSocketTransport\/clientVersion",
   "kind" : "symbol",
   "role" : "symbol",
   "title" : "clientVersion",
   "type" : "topic",
-  "url" : "\/documentation\/apollowebsocket\/websockettransport\/clientversion-919yz"
+  "url" : "\/documentation\/apollowebsocket\/websockettransport\/clientversion"
 },
 "doc://ApolloWebSocket/documentation/ApolloWebSocket/WebSocketTransport/closeConnection()": {
   "abstract" : [
@@ -459,6 +460,75 @@
   "title" : "delegate",
   "type" : "topic",
   "url" : "\/documentation\/apollowebsocket\/websockettransport\/delegate"
+},
+"doc://ApolloWebSocket/documentation/ApolloWebSocket/WebSocketTransport/enableSOCKSProxy": {
+  "abstract" : [
+    {
+      "text" : "Determines whether a SOCKS proxy is enabled on the underlying request.",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "Mostly useful for debugging with tools like Charles Proxy.",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "text" : "Note: Will return ",
+      "type" : "text"
+    },
+    {
+      "code" : "false",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : " from the getter and no-op the setter for implementations that do not conform to ",
+      "type" : "text"
+    },
+    {
+      "code" : "SOCKSProxyable",
+      "type" : "codeVoice"
+    },
+    {
+      "text" : ".",
+      "type" : "text"
+    }
+  ],
+  "fragments" : [
+    {
+      "kind" : "keyword",
+      "text" : "var"
+    },
+    {
+      "kind" : "text",
+      "text" : " "
+    },
+    {
+      "kind" : "identifier",
+      "text" : "enableSOCKSProxy"
+    },
+    {
+      "kind" : "text",
+      "text" : ": "
+    },
+    {
+      "kind" : "typeIdentifier",
+      "preciseIdentifier" : "s:Sb",
+      "text" : "Bool"
+    }
+  ],
+  "identifier" : "doc:\/\/ApolloWebSocket\/documentation\/ApolloWebSocket\/WebSocketTransport\/enableSOCKSProxy",
+  "kind" : "symbol",
+  "role" : "symbol",
+  "title" : "enableSOCKSProxy",
+  "type" : "topic",
+  "url" : "\/documentation\/apollowebsocket\/websockettransport\/enablesocksproxy"
 },
 "doc://ApolloWebSocket/documentation/ApolloWebSocket/WebSocketTransport/handleConnection()": {
   "abstract" : [

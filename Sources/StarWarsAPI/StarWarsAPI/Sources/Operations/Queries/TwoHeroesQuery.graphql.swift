@@ -5,21 +5,10 @@
 
 public class TwoHeroesQuery: GraphQLQuery {
   public static let operationName: String = "TwoHeroes"
-  public static let document: ApolloAPI.DocumentType = .automaticallyPersisted(
-    operationIdentifier: "b868fa9c48f19b8151c08c09f46831e3b9cd09f5c617d328647de785244b52bb",
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
+    operationIdentifier: "79c1cf70ead0fb9d7bb0811982560f1585b0b0a4ad7507c934b43a4482bb2097",
     definition: .init(
-      #"""
-      query TwoHeroes {
-        r2: hero {
-          __typename
-          name
-        }
-        luke: hero(episode: EMPIRE) {
-          __typename
-          name
-        }
-      }
-      """#
+      #"query TwoHeroes { r2: hero { __typename name } luke: hero(episode: EMPIRE) { __typename name } }"#
     ))
 
   public init() {}
@@ -41,14 +30,16 @@ public class TwoHeroesQuery: GraphQLQuery {
       r2: R2? = nil,
       luke: Luke? = nil
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": StarWarsAPI.Objects.Query.typename,
-        "r2": r2._fieldData,
-        "luke": luke._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": StarWarsAPI.Objects.Query.typename,
+          "r2": r2._fieldData,
+          "luke": luke._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(TwoHeroesQuery.Data.self)
+        ]
+      ))
     }
 
     /// R2
@@ -71,13 +62,15 @@ public class TwoHeroesQuery: GraphQLQuery {
         __typename: String,
         name: String
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": __typename,
-          "name": name,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self)
-          ])
-        ]))
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": __typename,
+            "name": name,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(TwoHeroesQuery.Data.R2.self)
+          ]
+        ))
       }
     }
 
@@ -101,13 +94,15 @@ public class TwoHeroesQuery: GraphQLQuery {
         __typename: String,
         name: String
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": __typename,
-          "name": name,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self)
-          ])
-        ]))
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": __typename,
+            "name": name,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(TwoHeroesQuery.Data.Luke.self)
+          ]
+        ))
       }
     }
   }

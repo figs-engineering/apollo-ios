@@ -5,18 +5,10 @@
 
 public class HumanQuery: GraphQLQuery {
   public static let operationName: String = "Human"
-  public static let document: ApolloAPI.DocumentType = .automaticallyPersisted(
-    operationIdentifier: "b37eb69b82fd52358321e49453769750983be1c286744dbf415735d7bcf12f1e",
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
+    operationIdentifier: "22b975c180932a926f48bfec1e002b9d1389e0ee1d84b3cdfa337d80fb036a26",
     definition: .init(
-      #"""
-      query Human($id: ID!) {
-        human(id: $id) {
-          __typename
-          name
-          mass
-        }
-      }
-      """#
+      #"query Human($id: ID!) { human(id: $id) { __typename name mass } }"#
     ))
 
   public var id: ID
@@ -41,13 +33,15 @@ public class HumanQuery: GraphQLQuery {
     public init(
       human: Human? = nil
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": StarWarsAPI.Objects.Query.typename,
-        "human": human._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": StarWarsAPI.Objects.Query.typename,
+          "human": human._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(HumanQuery.Data.self)
+        ]
+      ))
     }
 
     /// Human
@@ -73,14 +67,16 @@ public class HumanQuery: GraphQLQuery {
         name: String,
         mass: Double? = nil
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": StarWarsAPI.Objects.Human.typename,
-          "name": name,
-          "mass": mass,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self)
-          ])
-        ]))
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": StarWarsAPI.Objects.Human.typename,
+            "name": name,
+            "mass": mass,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(HumanQuery.Data.Human.self)
+          ]
+        ))
       }
     }
   }

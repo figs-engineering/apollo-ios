@@ -60,25 +60,19 @@ class FragmentTemplateTests: XCTestCase {
     subject.template.description
   }
 
-  // MARK: - Fragment Definition
+  // MARK: Fragment Definition
 
   func test__render__givenFragment_generatesFragmentDeclarationDefinitionAndBoilerplate() throws {
     // given
     let expected =
     """
     struct TestFragment: TestSchema.SelectionSet, Fragment {
-      public static var fragmentDefinition: StaticString { ""\"
-        fragment TestFragment on Query {
-          __typename
-          allAnimals {
-            __typename
-            species
-          }
-        }
-        ""\" }
+      static var fragmentDefinition: StaticString {
+        #"fragment TestFragment on Query { __typename allAnimals { __typename species } }"#
+      }
 
-      public let __data: DataDict
-      public init(_dataDict: DataDict) { __data = _dataDict }
+      let __data: DataDict
+      init(_dataDict: DataDict) { __data = _dataDict }
     """
 
     // when
@@ -89,51 +83,6 @@ class FragmentTemplateTests: XCTestCase {
     // then
     expect(actual).to(equalLineByLine(expected, ignoringExtraLines: true))
     expect(String(actual.reversed())).to(equalLineByLine("\n}", ignoringExtraLines: true))
-  }
-
-  func test__render__givenModuleType_swiftPackageManager_generatesFragmentDefinition_withPublicModifier() throws {
-    // given
-    try buildSubjectAndFragment(config: .mock(.swiftPackageManager))
-
-    let expected = """
-    public struct TestFragment: TestSchema.SelectionSet, Fragment {
-    """
-
-    // when
-    let actual = renderSubject()
-
-    // then
-    expect(actual).to(equalLineByLine(expected, ignoringExtraLines: true))
-  }
-
-  func test__render__givenModuleType_other_generatesFragmentDefinition_withPublicModifier() throws {
-    // given
-    try buildSubjectAndFragment(config: .mock(.other))
-
-    let expected = """
-    public struct TestFragment: TestSchema.SelectionSet, Fragment {
-    """
-
-    // when
-    let actual = renderSubject()
-
-    // then
-    expect(actual).to(equalLineByLine(expected, ignoringExtraLines: true))
-  }
-
-  func test__render__givenModuleType_embeddedInTarget_generatesFragmentDefinition_noPublicModifier() throws {
-    // given
-    try buildSubjectAndFragment(config: .mock(.embeddedInTarget(name: "TestTarget")))
-
-    let expected = """
-    struct TestFragment: TestSchema.SelectionSet, Fragment {
-    """
-
-    // when
-    let actual = renderSubject()
-
-    // then
-    expect(actual).to(equalLineByLine(expected, ignoringExtraLines: true))
   }
 
   func test__render__givenLowercaseFragment_generatesTitleCaseTypeName() throws {
@@ -149,8 +98,8 @@ class FragmentTemplateTests: XCTestCase {
     let expected =
     """
     struct TestFragment: TestSchema.SelectionSet, Fragment {
-      public static var fragmentDefinition: StaticString { ""\"
-        fragment testFragment on Query {
+      static var fragmentDefinition: StaticString {
+        #"fragment testFragment on Query { __typename allAnimals { __typename species } }"#
     """
 
     // when
@@ -211,7 +160,7 @@ class FragmentTemplateTests: XCTestCase {
     """
 
     let expected = """
-      public static var __parentType: ApolloAPI.ParentType { TestSchema.Objects.Animal }
+      static var __parentType: ApolloAPI.ParentType { TestSchema.Objects.Animal }
     """
 
     // when
@@ -219,7 +168,7 @@ class FragmentTemplateTests: XCTestCase {
     let actual = renderSubject()
 
     // then
-    expect(actual).to(equalLineByLine(expected, atLine: 12, ignoringExtraLines: true))
+    expect(actual).to(equalLineByLine(expected, atLine: 9, ignoringExtraLines: true))
   }
 
   func test__render_parentType__givenFragmentTypeConditionAs_Interface_rendersParentType() throws {
@@ -241,7 +190,7 @@ class FragmentTemplateTests: XCTestCase {
     """
 
     let expected = """
-      public static var __parentType: ApolloAPI.ParentType { TestSchema.Interfaces.Animal }
+      static var __parentType: ApolloAPI.ParentType { TestSchema.Interfaces.Animal }
     """
 
     // when
@@ -249,7 +198,7 @@ class FragmentTemplateTests: XCTestCase {
     let actual = renderSubject()
 
     // then
-    expect(actual).to(equalLineByLine(expected, atLine: 12, ignoringExtraLines: true))
+    expect(actual).to(equalLineByLine(expected, atLine: 9, ignoringExtraLines: true))
   }
 
   func test__render_parentType__givenFragmentTypeConditionAs_Union_rendersParentType() throws {
@@ -275,7 +224,7 @@ class FragmentTemplateTests: XCTestCase {
     """
 
     let expected = """
-      public static var __parentType: ApolloAPI.ParentType { TestSchema.Unions.Animal }
+      static var __parentType: ApolloAPI.ParentType { TestSchema.Unions.Animal }
     """
 
     // when
@@ -283,7 +232,7 @@ class FragmentTemplateTests: XCTestCase {
     let actual = renderSubject()
 
     // then
-    expect(actual).to(equalLineByLine(expected, atLine: 14, ignoringExtraLines: true))
+    expect(actual).to(equalLineByLine(expected, atLine: 9, ignoringExtraLines: true))
   }
 
   func test__render__givenFragmentOnRootOperationTypeWithOnlyTypenameField_generatesFragmentDefinition_withNoSelections() throws {
@@ -298,17 +247,15 @@ class FragmentTemplateTests: XCTestCase {
 
     let expected = """
     struct TestFragment: TestSchema.SelectionSet, Fragment {
-      public static var fragmentDefinition: StaticString { ""\"
-        fragment TestFragment on Query {
-          __typename
-        }
-        ""\" }
+      static var fragmentDefinition: StaticString {
+        #"fragment TestFragment on Query { __typename }"#
+      }
 
-      public let __data: DataDict
-      public init(_dataDict: DataDict) { __data = _dataDict }
+      let __data: DataDict
+      init(_dataDict: DataDict) { __data = _dataDict }
 
-      public static var __parentType: ApolloAPI.ParentType { TestSchema.Objects.Query }
-      public static var __selections: [ApolloAPI.Selection] { [
+      static var __parentType: ApolloAPI.ParentType { TestSchema.Objects.Query }
+      static var __selections: [ApolloAPI.Selection] { [
       ] }
     }
 
@@ -333,17 +280,15 @@ class FragmentTemplateTests: XCTestCase {
 
     let expected = """
     struct TestFragment: TestSchema.SelectionSet, Fragment {
-      public static var fragmentDefinition: StaticString { ""\"
-        fragment TestFragment on Animal {
-          __typename
-        }
-        ""\" }
+      static var fragmentDefinition: StaticString {
+        #"fragment TestFragment on Animal { __typename }"#
+      }
 
-      public let __data: DataDict
-      public init(_dataDict: DataDict) { __data = _dataDict }
+      let __data: DataDict
+      init(_dataDict: DataDict) { __data = _dataDict }
 
-      public static var __parentType: ApolloAPI.ParentType { TestSchema.Objects.Animal }
-      public static var __selections: [ApolloAPI.Selection] { [
+      static var __parentType: ApolloAPI.ParentType { TestSchema.Objects.Animal }
+      static var __selections: [ApolloAPI.Selection] { [
         .field("__typename", String.self),
       ] }
     }
@@ -357,7 +302,77 @@ class FragmentTemplateTests: XCTestCase {
     expect(actual).to(equalLineByLine(expected))
   }
 
-  // MARK: - Initializer Tests
+  // MARK: Access Level Tests
+
+  func test__render__givenModuleType_swiftPackageManager_generatesFragmentDefinition_withPublicAccess() throws {
+    // given
+    try buildSubjectAndFragment(config: .mock(.swiftPackageManager))
+
+    let expected = """
+    public struct TestFragment: TestSchema.SelectionSet, Fragment {
+      public static var fragmentDefinition: StaticString {
+    """
+
+    // when
+    let actual = renderSubject()
+
+    // then
+    expect(actual).to(equalLineByLine(expected, ignoringExtraLines: true))
+  }
+
+  func test__render__givenModuleType_other_generatesFragmentDefinition_withPublicAccess() throws {
+    // given
+    try buildSubjectAndFragment(config: .mock(.other))
+
+    let expected = """
+    public struct TestFragment: TestSchema.SelectionSet, Fragment {
+      public static var fragmentDefinition: StaticString {
+    """
+
+    // when
+    let actual = renderSubject()
+
+    // then
+    expect(actual).to(equalLineByLine(expected, ignoringExtraLines: true))
+  }
+
+  func test__render__givenModuleType_embeddedInTarget_withInternalAccessModifier_generatesFragmentDefinition_withInternalAccess() throws {
+    // given
+    try buildSubjectAndFragment(
+      config: .mock(.embeddedInTarget(name: "TestTarget", accessModifier: .internal))
+    )
+
+    let expected = """
+    struct TestFragment: TestSchema.SelectionSet, Fragment {
+      static var fragmentDefinition: StaticString {
+    """
+
+    // when
+    let actual = renderSubject()
+
+    // then
+    expect(actual).to(equalLineByLine(expected, ignoringExtraLines: true))
+  }
+
+  func test__render__givenModuleType_embeddedInTarget_withPublicAccessModifier_generatesFragmentDefinition_withPublicAccess() throws {
+    // given
+    try buildSubjectAndFragment(
+      config: .mock(.embeddedInTarget(name: "TestTarget", accessModifier: .public))
+    )
+
+    let expected = """
+    struct TestFragment: TestSchema.SelectionSet, Fragment {
+      public static var fragmentDefinition: StaticString {
+    """
+
+    // when
+    let actual = renderSubject()
+
+    // then
+    expect(actual).to(equalLineByLine(expected, ignoringExtraLines: true))
+  }
+
+  // MARK: Initializer Tests
 
   func test__render_givenInitializerConfigIncludesNamedFragments_rendersInitializer() throws {
     // given
@@ -379,16 +394,18 @@ class FragmentTemplateTests: XCTestCase {
 
     let expected =
       """
-        public init(
+        init(
           species: String
         ) {
-          self.init(_dataDict: DataDict(data: [
-            "__typename": TestSchema.Objects.Animal.typename,
-            "species": species,
-            "__fulfilled": Set([
-              ObjectIdentifier(Self.self)
-            ])
-          ]))
+          self.init(_dataDict: DataDict(
+            data: [
+              "__typename": TestSchema.Objects.Animal.typename,
+              "species": species,
+            ],
+            fulfilledFragments: [
+              ObjectIdentifier(TestFragment.self)
+            ]
+          ))
         }
       """
 
@@ -401,7 +418,7 @@ class FragmentTemplateTests: XCTestCase {
     let actual = renderSubject()
 
     // then
-    expect(actual).to(equalLineByLine(expected, atLine: 20, ignoringExtraLines: true))
+    expect(actual).to(equalLineByLine(expected, atLine: 17, ignoringExtraLines: true))
   }
 
   func test__render_givenNamedFragment_configIncludesSpecificFragment_rendersInitializer() throws {
@@ -424,16 +441,18 @@ class FragmentTemplateTests: XCTestCase {
 
     let expected =
       """
-        public init(
+        init(
           species: String
         ) {
-          self.init(_dataDict: DataDict(data: [
-            "__typename": TestSchema.Objects.Animal.typename,
-            "species": species,
-            "__fulfilled": Set([
-              ObjectIdentifier(Self.self)
-            ])
-          ]))
+          self.init(_dataDict: DataDict(
+            data: [
+              "__typename": TestSchema.Objects.Animal.typename,
+              "species": species,
+            ],
+            fulfilledFragments: [
+              ObjectIdentifier(TestFragment.self)
+            ]
+          ))
         }
       """
 
@@ -446,7 +465,7 @@ class FragmentTemplateTests: XCTestCase {
     let actual = renderSubject()
 
     // then
-    expect(actual).to(equalLineByLine(expected, atLine: 20, ignoringExtraLines: true))
+    expect(actual).to(equalLineByLine(expected, atLine: 17, ignoringExtraLines: true))
   }
 
   func test__render_givenNamedFragment_configDoesNotIncludeNamedFragments_doesNotRenderInitializer() throws {
@@ -476,7 +495,7 @@ class FragmentTemplateTests: XCTestCase {
     let actual = renderSubject()
 
     // then
-    expect(actual).to(equalLineByLine("}", atLine: 19, ignoringExtraLines: true))
+    expect(actual).to(equalLineByLine("}", atLine: 16, ignoringExtraLines: true))
   }
 
   func test__render_givenNamedFragments_configIncludeSpecificFragmentWithOtherName_doesNotRenderInitializer() throws {
@@ -506,7 +525,7 @@ class FragmentTemplateTests: XCTestCase {
     let actual = renderSubject()
 
     // then
-    expect(actual).to(equalLineByLine("}", atLine: 19, ignoringExtraLines: true))
+    expect(actual).to(equalLineByLine("}", atLine: 16, ignoringExtraLines: true))
   }
 
   func test__render_givenNamedFragments_asLocalCacheMutation_configIncludeLocalCacheMutations_rendersInitializer() throws {
@@ -529,16 +548,18 @@ class FragmentTemplateTests: XCTestCase {
 
     let expected =
       """
-        public init(
+        init(
           species: String
         ) {
-          self.init(_dataDict: DataDict(data: [
-            "__typename": TestSchema.Objects.Animal.typename,
-            "species": species,
-            "__fulfilled": Set([
-              ObjectIdentifier(Self.self)
-            ])
-          ]))
+          self.init(_dataDict: DataDict(
+            data: [
+              "__typename": TestSchema.Objects.Animal.typename,
+              "species": species,
+            ],
+            fulfilledFragments: [
+              ObjectIdentifier(TestFragment.self)
+            ]
+          ))
         }
       """
 
@@ -551,10 +572,10 @@ class FragmentTemplateTests: XCTestCase {
     let actual = renderSubject()
 
     // then
-    expect(actual).to(equalLineByLine(expected, atLine: 23, ignoringExtraLines: true))
+    expect(actual).to(equalLineByLine(expected, atLine: 20, ignoringExtraLines: true))
   }
 
-  // MARK: - Local Cache Mutation Tests
+  // MARK: Local Cache Mutation Tests
   func test__render__givenFragment__asLocalCacheMutation_generatesFragmentDeclarationDefinitionAsMutableSelectionSetAndBoilerplate() throws {
     // given
     document = """
@@ -593,15 +614,9 @@ class FragmentTemplateTests: XCTestCase {
     let expected =
     """
     struct TestFragment: TestSchema.MutableSelectionSet, Fragment {
-      public static var fragmentDefinition: StaticString { ""\"
-        fragment TestFragment on Query {
-          __typename
-          allAnimals {
-            __typename
-            species
-          }
-        }
-        ""\" }
+      static var fragmentDefinition: StaticString {
+        #"fragment TestFragment on Query { __typename allAnimals { __typename species } }"#
+      }
     """
 
     // when
@@ -626,15 +641,15 @@ class FragmentTemplateTests: XCTestCase {
 
     let expected =
     """
-      public var __data: DataDict
-      public init(_dataDict: DataDict) { __data = _dataDict }
+      var __data: DataDict
+      init(_dataDict: DataDict) { __data = _dataDict }
 
-      public static var __parentType: ApolloAPI.ParentType { TestSchema.Objects.Query }
-      public static var __selections: [ApolloAPI.Selection] { [
+      static var __parentType: ApolloAPI.ParentType { TestSchema.Objects.Query }
+      static var __selections: [ApolloAPI.Selection] { [
         .field("allAnimals", [AllAnimal]?.self),
       ] }
 
-      public var allAnimals: [AllAnimal]? {
+      var allAnimals: [AllAnimal]? {
         get { __data["allAnimals"] }
         set { __data["allAnimals"] = newValue }
       }
@@ -646,7 +661,7 @@ class FragmentTemplateTests: XCTestCase {
     let actual = renderSubject()
 
     // then
-    expect(actual).to(equalLineByLine(expected, atLine: 12, ignoringExtraLines: true))
+    expect(actual).to(equalLineByLine(expected, atLine: 6, ignoringExtraLines: true))
   }
 
   // MARK: Casing
@@ -692,4 +707,42 @@ class FragmentTemplateTests: XCTestCase {
 
     expect(actual).to(equalLineByLine(expected, ignoringExtraLines: true))
   }
+  
+  // MARK: - Reserved Keyword Tests
+  
+  func test__render__givenFragmentReservedKeywordName_rendersEscapedName() throws {
+    let keywords = ["Type", "type"]
+    
+    try keywords.forEach { keyword in
+      // given
+      schemaSDL = """
+      type Query {
+        getUser(id: String): User
+      }
+
+      type User {
+        id: String!
+        name: String!
+      }
+      """
+
+      document = """
+      fragment \(keyword) on User {
+          name
+      }
+      """
+
+      let expected = """
+      struct \(keyword.firstUppercased)_Fragment: TestSchema.SelectionSet, Fragment {
+      """
+
+      // when
+      try buildSubjectAndFragment(named: keyword)
+      let actual = renderSubject()
+
+      // then
+      expect(actual).to(equalLineByLine(expected, ignoringExtraLines: true))
+    }
+  }
+  
 }

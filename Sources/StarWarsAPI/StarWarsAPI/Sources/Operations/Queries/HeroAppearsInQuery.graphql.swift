@@ -5,17 +5,10 @@
 
 public class HeroAppearsInQuery: GraphQLQuery {
   public static let operationName: String = "HeroAppearsIn"
-  public static let document: ApolloAPI.DocumentType = .automaticallyPersisted(
-    operationIdentifier: "22d772c0fc813281705e8f0a55fc70e71eeff6e98f3f9ef96cf67fb896914522",
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
+    operationIdentifier: "59243627e0166c9b631551b56dc4d29701f2d90336d83c231172c50152e02475",
     definition: .init(
-      #"""
-      query HeroAppearsIn {
-        hero {
-          __typename
-          appearsIn
-        }
-      }
-      """#
+      #"query HeroAppearsIn { hero { __typename appearsIn } }"#
     ))
 
   public init() {}
@@ -34,13 +27,15 @@ public class HeroAppearsInQuery: GraphQLQuery {
     public init(
       hero: Hero? = nil
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": StarWarsAPI.Objects.Query.typename,
-        "hero": hero._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": StarWarsAPI.Objects.Query.typename,
+          "hero": hero._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(HeroAppearsInQuery.Data.self)
+        ]
+      ))
     }
 
     /// Hero
@@ -63,13 +58,15 @@ public class HeroAppearsInQuery: GraphQLQuery {
         __typename: String,
         appearsIn: [GraphQLEnum<StarWarsAPI.Episode>?]
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": __typename,
-          "appearsIn": appearsIn,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self)
-          ])
-        ]))
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": __typename,
+            "appearsIn": appearsIn,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(HeroAppearsInQuery.Data.Hero.self)
+          ]
+        ))
       }
     }
   }

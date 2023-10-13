@@ -4,12 +4,9 @@
 @_exported import ApolloAPI
 
 public struct DogFragment: AnimalKingdomAPI.SelectionSet, Fragment {
-  public static var fragmentDefinition: StaticString { """
-    fragment DogFragment on Dog {
-      __typename
-      species
-    }
-    """ }
+  public static var fragmentDefinition: StaticString {
+    #"fragment DogFragment on Dog { __typename species }"#
+  }
 
   public let __data: DataDict
   public init(_dataDict: DataDict) { __data = _dataDict }
@@ -25,12 +22,14 @@ public struct DogFragment: AnimalKingdomAPI.SelectionSet, Fragment {
   public init(
     species: String
   ) {
-    self.init(_dataDict: DataDict(data: [
-      "__typename": AnimalKingdomAPI.Objects.Dog.typename,
-      "species": species,
-      "__fulfilled": Set([
-        ObjectIdentifier(Self.self)
-      ])
-    ]))
+    self.init(_dataDict: DataDict(
+      data: [
+        "__typename": AnimalKingdomAPI.Objects.Dog.typename,
+        "species": species,
+      ],
+      fulfilledFragments: [
+        ObjectIdentifier(DogFragment.self)
+      ]
+    ))
   }
 }

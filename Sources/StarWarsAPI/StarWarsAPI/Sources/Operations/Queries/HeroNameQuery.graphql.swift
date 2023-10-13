@@ -5,17 +5,10 @@
 
 public class HeroNameQuery: GraphQLQuery {
   public static let operationName: String = "HeroName"
-  public static let document: ApolloAPI.DocumentType = .automaticallyPersisted(
-    operationIdentifier: "f6e76545cd03aa21368d9969cb39447f6e836a16717823281803778e7805d671",
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
+    operationIdentifier: "b9d49e889d6f5877c0bf09b8b4f88a71f88836a771e0e48c270a9aa8b506dda1",
     definition: .init(
-      #"""
-      query HeroName($episode: Episode) {
-        hero(episode: $episode) {
-          __typename
-          name
-        }
-      }
-      """#
+      #"query HeroName($episode: Episode) { hero(episode: $episode) { __typename name } }"#
     ))
 
   public var episode: GraphQLNullable<GraphQLEnum<Episode>>
@@ -40,13 +33,15 @@ public class HeroNameQuery: GraphQLQuery {
     public init(
       hero: Hero? = nil
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": StarWarsAPI.Objects.Query.typename,
-        "hero": hero._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": StarWarsAPI.Objects.Query.typename,
+          "hero": hero._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(HeroNameQuery.Data.self)
+        ]
+      ))
     }
 
     /// Hero
@@ -69,13 +64,15 @@ public class HeroNameQuery: GraphQLQuery {
         __typename: String,
         name: String
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": __typename,
-          "name": name,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self)
-          ])
-        ]))
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": __typename,
+            "name": name,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(HeroNameQuery.Data.Hero.self)
+          ]
+        ))
       }
     }
   }

@@ -5,25 +5,10 @@
 
 public class HeroDetailsQuery: GraphQLQuery {
   public static let operationName: String = "HeroDetails"
-  public static let document: ApolloAPI.DocumentType = .automaticallyPersisted(
-    operationIdentifier: "207d29944f5822bff08a07db4a55274ea14035bacfe20699da41a47454f1181e",
+  public static let operationDocument: ApolloAPI.OperationDocument = .init(
+    operationIdentifier: "bf81c1338a3953d1c17c5cad3db3c3ab18b16a6822125ab81c15eb0dd3e82193",
     definition: .init(
-      #"""
-      query HeroDetails($episode: Episode) {
-        hero(episode: $episode) {
-          __typename
-          name
-          ... on Human {
-            __typename
-            height
-          }
-          ... on Droid {
-            __typename
-            primaryFunction
-          }
-        }
-      }
-      """#
+      #"query HeroDetails($episode: Episode) { hero(episode: $episode) { __typename name ... on Human { __typename height } ... on Droid { __typename primaryFunction } } }"#
     ))
 
   public var episode: GraphQLNullable<GraphQLEnum<Episode>>
@@ -48,13 +33,15 @@ public class HeroDetailsQuery: GraphQLQuery {
     public init(
       hero: Hero? = nil
     ) {
-      self.init(_dataDict: DataDict(data: [
-        "__typename": StarWarsAPI.Objects.Query.typename,
-        "hero": hero._fieldData,
-        "__fulfilled": Set([
-          ObjectIdentifier(Self.self)
-        ])
-      ]))
+      self.init(_dataDict: DataDict(
+        data: [
+          "__typename": StarWarsAPI.Objects.Query.typename,
+          "hero": hero._fieldData,
+        ],
+        fulfilledFragments: [
+          ObjectIdentifier(HeroDetailsQuery.Data.self)
+        ]
+      ))
     }
 
     /// Hero
@@ -82,13 +69,15 @@ public class HeroDetailsQuery: GraphQLQuery {
         __typename: String,
         name: String
       ) {
-        self.init(_dataDict: DataDict(data: [
-          "__typename": __typename,
-          "name": name,
-          "__fulfilled": Set([
-            ObjectIdentifier(Self.self)
-          ])
-        ]))
+        self.init(_dataDict: DataDict(
+          data: [
+            "__typename": __typename,
+            "name": name,
+          ],
+          fulfilledFragments: [
+            ObjectIdentifier(HeroDetailsQuery.Data.Hero.self)
+          ]
+        ))
       }
 
       /// Hero.AsHuman
@@ -113,15 +102,17 @@ public class HeroDetailsQuery: GraphQLQuery {
           height: Double? = nil,
           name: String
         ) {
-          self.init(_dataDict: DataDict(data: [
-            "__typename": StarWarsAPI.Objects.Human.typename,
-            "height": height,
-            "name": name,
-            "__fulfilled": Set([
-              ObjectIdentifier(Self.self),
-              ObjectIdentifier(Hero.self)
-            ])
-          ]))
+          self.init(_dataDict: DataDict(
+            data: [
+              "__typename": StarWarsAPI.Objects.Human.typename,
+              "height": height,
+              "name": name,
+            ],
+            fulfilledFragments: [
+              ObjectIdentifier(HeroDetailsQuery.Data.Hero.self),
+              ObjectIdentifier(HeroDetailsQuery.Data.Hero.AsHuman.self)
+            ]
+          ))
         }
       }
 
@@ -147,15 +138,17 @@ public class HeroDetailsQuery: GraphQLQuery {
           primaryFunction: String? = nil,
           name: String
         ) {
-          self.init(_dataDict: DataDict(data: [
-            "__typename": StarWarsAPI.Objects.Droid.typename,
-            "primaryFunction": primaryFunction,
-            "name": name,
-            "__fulfilled": Set([
-              ObjectIdentifier(Self.self),
-              ObjectIdentifier(Hero.self)
-            ])
-          ]))
+          self.init(_dataDict: DataDict(
+            data: [
+              "__typename": StarWarsAPI.Objects.Droid.typename,
+              "primaryFunction": primaryFunction,
+              "name": name,
+            ],
+            fulfilledFragments: [
+              ObjectIdentifier(HeroDetailsQuery.Data.Hero.self),
+              ObjectIdentifier(HeroDetailsQuery.Data.Hero.AsDroid.self)
+            ]
+          ))
         }
       }
     }

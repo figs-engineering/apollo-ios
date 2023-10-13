@@ -4,18 +4,18 @@ import OrderedCollections
 extension IR {
 
   class RootFieldEntityStorage {
-    private(set) var entitiesForFields: [Entity.FieldPath: IR.Entity] = [:]
+    private(set) var entitiesForFields: [Entity.Location: IR.Entity] = [:]
 
     init(rootEntity: Entity) {
-      entitiesForFields[rootEntity.fieldPath] = rootEntity
+      entitiesForFields[rootEntity.location] = rootEntity
     }
 
     func entity(
       for field: CompilationResult.Field,
       on enclosingEntity: Entity
     ) -> Entity {
-      let fieldPath = enclosingEntity
-        .fieldPath
+      let location = enclosingEntity
+        .location
         .appending(.init(name: field.responseKey, type: field.type))
 
       var rootTypePath: LinkedList<GraphQLCompositeType> {
@@ -25,36 +25,38 @@ extension IR {
         return enclosingEntity.rootTypePath.appending(fieldType)
       }
 
-      return entitiesForFields[fieldPath] ??
-      createEntity(fieldPath: fieldPath, rootTypePath: rootTypePath)
+      return entitiesForFields[location] ??
+      createEntity(location: location, rootTypePath: rootTypePath)
     }
 
     func entity(
-      for otherEntity: IR.Entity,
+      for entityInFragment: IR.Entity,
       inFragmentSpreadAtTypePath fragmentSpreadTypeInfo: SelectionSet.TypeInfo
     ) -> Entity {
-      let fieldPath = fragmentSpreadTypeInfo.entity.fieldPath +
-      otherEntity.fieldPath.dropFirst()
+      var location = fragmentSpreadTypeInfo.entity.location
+      if let pathInFragment = entityInFragment.location.fieldPath {
+        location = location.appending(pathInFragment)
+      }
 
       var rootTypePath: LinkedList<GraphQLCompositeType> {
-        let otherRootTypePath = otherEntity.rootTypePath.dropFirst()
+        let otherRootTypePath = entityInFragment.rootTypePath.dropFirst()
         return fragmentSpreadTypeInfo.entity.rootTypePath.appending(otherRootTypePath)
       }
 
-      return entitiesForFields[fieldPath] ??
-      createEntity(fieldPath: fieldPath, rootTypePath: rootTypePath)
+      return entitiesForFields[location] ??
+      createEntity(location: location, rootTypePath: rootTypePath)
     }
 
     private func createEntity(
-      fieldPath: Entity.FieldPath,
+      location: Entity.Location,
       rootTypePath: LinkedList<GraphQLCompositeType>
     ) -> Entity {
-      let entity = Entity(rootTypePath: rootTypePath, fieldPath: fieldPath)
-      entitiesForFields[fieldPath] = entity
+      let entity = Entity(location: location, rootTypePath: rootTypePath)
+      entitiesForFields[location] = entity
       return entity
     }
 
-    fileprivate func mergeAllSelectionsIntoEntitySelectionTrees(from fragmentSpread: FragmentSpread) {
+    fileprivate func mergeAllSelectionsIntoEntitySelectionTrees(from fragmentSpread: NamedFragmentSpread) {
       for (_, fragmentEntity) in fragmentSpread.fragment.entities {
         let entity = entity(for: fragmentEntity, inFragmentSpreadAtTypePath: fragmentSpread.typeInfo)
         entity.selectionTree.mergeIn(fragmentEntity.selectionTree, from: fragmentSpread, using: self)
@@ -66,7 +68,7 @@ extension IR {
     struct Result {
       let rootField: IR.EntityField
       let referencedFragments: ReferencedFragments
-      let entities: [Entity.FieldPath: IR.Entity]
+      let entities: [Entity.Location: IR.Entity]
     }
 
     typealias ReferencedFragments = OrderedSet<NamedFragment>
@@ -177,7 +179,7 @@ extension IR {
           )
 
         } else {
-          let irTypeCase = buildConditionalSelectionSet(
+          let irTypeCase = buildInlineFragmentSpread(
             from: inlineSelectionSet,
             with: scope,
             inParentTypePath: typeInfo
@@ -198,7 +200,7 @@ extension IR {
         let matchesScope = selectionSetScope.matches(scope)
 
         if matchesScope {
-          let irFragmentSpread = buildFragmentSpread(
+          let irFragmentSpread = buildNamedFragmentSpread(
             fromFragment: fragmentSpread,
             with: scope,
             spreadIntoParentWithTypePath: typeInfo
@@ -206,7 +208,7 @@ extension IR {
           target.mergeIn(irFragmentSpread)
 
         } else {
-          let irTypeCaseEnclosingFragment = buildConditionalSelectionSet(
+          let irTypeCaseEnclosingFragment = buildInlineFragmentSpread(
             from: CompilationResult.SelectionSet(
               parentType: fragmentSpread.parentType,
               selections: [selection]
@@ -219,7 +221,7 @@ extension IR {
 
           if matchesType {
             typeInfo.entity.selectionTree.mergeIn(
-              selections: irTypeCaseEnclosingFragment.selections.direct.unsafelyUnwrapped.readOnlyView,
+              selections: irTypeCaseEnclosingFragment.selectionSet.selections.direct.unsafelyUnwrapped.readOnlyView,
               with: typeInfo
             )
           }
@@ -311,11 +313,11 @@ extension IR {
       return irSelectionSet
     }
 
-    private func buildConditionalSelectionSet(
+    private func buildInlineFragmentSpread(
       from selectionSet: CompilationResult.SelectionSet?,
       with scopeCondition: ScopeCondition,
       inParentTypePath enclosingTypeInfo: SelectionSet.TypeInfo
-    ) -> SelectionSet {
+    ) -> InlineFragmentSpread {
       let typePath = enclosingTypeInfo.scopePath.mutatingLast {
         $0.appending(scopeCondition)
       }
@@ -332,14 +334,18 @@ extension IR {
           from: selectionSet
         )
       }
-      return irSelectionSet
-    }
 
-    private func buildFragmentSpread(
+      return InlineFragmentSpread(
+        selectionSet: irSelectionSet,
+        isDeferred: scopeCondition.isDeferred
+      )
+    }    
+
+    private func buildNamedFragmentSpread(
       fromFragment fragmentSpread: CompilationResult.FragmentSpread,
       with scopeCondition: ScopeCondition,
       spreadIntoParentWithTypePath parentTypeInfo: SelectionSet.TypeInfo
-    ) -> FragmentSpread {
+    ) -> NamedFragmentSpread {
       let fragment = ir.build(fragment: fragmentSpread.fragment)
       referencedFragments.append(fragment)
       referencedFragments.append(contentsOf: fragment.referencedFragments)
@@ -355,14 +361,15 @@ extension IR {
         scopePath: scopePath
       )
 
-      let fragmentSpread = FragmentSpread(
+      let fragmentSpread = NamedFragmentSpread(
         fragment: fragment,
         typeInfo: typeInfo,
-        inclusionConditions: AnyOf(scopeCondition.conditions)
+        inclusionConditions: AnyOf(scopeCondition.conditions),
+        isDeferred: scopeCondition.isDeferred
       )
 
       entityStorage.mergeAllSelectionsIntoEntitySelectionTrees(from: fragmentSpread)
-      
+
       return fragmentSpread
     }
     

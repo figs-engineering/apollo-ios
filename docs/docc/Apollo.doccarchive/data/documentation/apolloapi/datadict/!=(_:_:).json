@@ -83,7 +83,10 @@
     ],
     "modules" : [
       {
-        "name" : "ApolloAPI"
+        "name" : "ApolloAPI",
+        "relatedModules" : [
+          "Swift"
+        ]
       }
     ],
     "role" : "symbol",
@@ -250,7 +253,7 @@
 "doc://ApolloAPI/documentation/ApolloAPI/DataDict": {
   "abstract" : [
     {
-      "text" : "A structure that wraps the underlying data used by ",
+      "text" : "A structure that wraps the underlying data for a ",
       "type" : "text"
     },
     {
@@ -259,7 +262,7 @@
       "type" : "reference"
     },
     {
-      "text" : "s.",
+      "text" : ".",
       "type" : "text"
     }
   ],
