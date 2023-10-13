@@ -35,7 +35,7 @@ struct SwiftPackageManagerModuleTemplate: TemplateRenderer {
         """})
       ],
       dependencies: [
-        .package(url: "https://github.com/figs-engineering/apollo-ios.git", exact: "1.1.3-mutable"),
+        .package(url: "https://github.com/figs-engineering/apollo-ios.git", exact: "1.5.1-mutable"),
       ],
       targets: [
         .target(
